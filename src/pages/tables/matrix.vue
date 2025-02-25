@@ -4,7 +4,7 @@ interface ListItem {
   index: number
 }
 const selectedList = ref<ListItem[]>([])
-const { data } = useApi<number[][]>('get_operators_1v1_matrix').post().json()
+const { data } = useApi<number[][]>('/get_operators_1v1_matrix').post().json()
 
 const labels = computed(() => {
   return [
@@ -40,19 +40,20 @@ const showData = computed(() => {
 </script>
 
 <template>
-  <div class="result-matrix">
-    <ResultMatrixTransfer v-model="selectedList" />
-    <Table :labels="labels" :data="showData" idkey="names" />
+  <div size-full flex p-4 gap-4>
+    <MatrixTransfer v-model="selectedList" p-4 rounded un-border="~ slate-400" />
+
+    <div
+      flex-1
+      overflow-auto
+      h-full
+      rounded
+      p-4
+      bg-gradient-to-lt
+      from-indigo-300
+      un-border="~ slate-400"
+    >
+      <Table :labels="labels" :data="showData" idkey="names" title="1v1 矩阵" />
+    </div>
   </div>
 </template>
-
-<style scoped>
-.result-matrix {
-    display: flex;
-}
-
-:deep(th),
-:deep(td) {
-    width: 6em;
-}
-</style>

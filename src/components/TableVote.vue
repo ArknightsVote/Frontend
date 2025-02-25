@@ -13,8 +13,6 @@ interface Props {
    */
   clusterKey?: string
   tbodyStyle?: CSSProperties
-
-  title?: string
 }
 
 const props = defineProps<Props>()
@@ -33,7 +31,7 @@ const showData = shallowRef<Props['data']>({})
 const orderLabel = {
   text: '排名',
   transform: (i: number) => i + 1,
-  style: { width: '5em' },
+//   style: { width: '5em' },
 }
 
 //
@@ -43,9 +41,9 @@ const orderLabel = {
 const cupLabel = {
   text: '杯级',
   key: 'cup',
-  style: {
-    width: '6em',
-  },
+//   style: {
+//     width: '6em',
+//   },
 }
 
 function buildCupData(clusterItems: any[]) {
@@ -104,37 +102,43 @@ function getValueByPos(col: number, label: TableProps['labels'][number]) {
 </script>
 
 <template>
-  <Table
-    v-if="showData"
-    :title="title"
-    :data="showData"
-    :labels="showLables"
-    :tbody-style="tbodyStyle"
-  >
-    <template #caption>
-      <span class="gvf-text">
-        区分度:
-        <em class="gvf">
-          {{ (GVF * 100).toFixed(2) }}%
-        </em>
-      </span>
-    </template>
-    <template #tbody>
-      <tr
-        v-for="(_, col) in showData[clusterKey]"
-        :key="col"
-        :style="{
-          backgroundColor: `#${colors[col]}`,
-        }"
-      >
-        <td
-          v-for="(label, index) in showLables"
-          :key="index"
-          :style="label.style"
+  <div>
+    <Table
+      v-if="showData"
+      :data="showData"
+      :labels="showLables"
+      :tbody-style="tbodyStyle"
+      bg-slate-100
+    >
+      <template #caption>
+        <div flex justify-between text-left>
+          <div flex-1 text-indigo-500 text-bold>
+            <slot name="caption" />
+          </div>
+          <span inline-block ml-auto mr-0 bg-indigo-500 py-2 px-4 rounded-lg text-slate-50>
+            区分度:
+            {{ (GVF * 100).toFixed(2) }}%
+          </span>
+        </div>
+      </template>
+      <template #tbody>
+        <tr
+          v-for="(_, col) in showData[clusterKey]"
+          :key="col"
+          :style="{
+            backgroundColor: `#${colors[col]}aa`,
+          }"
         >
-          {{ getValueByPos(col, label) }}
-        </td>
-      </tr>
-    </template>
-  </Table>
+          <td
+            v-for="(label, index) in showLables"
+            :key="index"
+            :style="label.style"
+            py-2
+          >
+            {{ getValueByPos(col, label) }}
+          </td>
+        </tr>
+      </template>
+    </Table>
+  </div>
 </template>

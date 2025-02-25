@@ -1,27 +1,26 @@
-<script setup lang="ts">
-</script>
-
 <template>
+  <FixedCG />
+
   <MouseFollower />
-  <div class="main">
-    <router-view />
-  </div>
+  <router-view v-slot="{ Component }">
+    <keep-alive>
+      <component :is="Component" />
+    </keep-alive>
+  </router-view>
 </template>
 
 <style>
 body {
-    background-color: var(--c-bg-1);
-    background: var(--img-bg) center top no-repeat fixed;
+    background: url('@/assets/images/bg.png') center no-repeat;
     background-size: cover;
+    background-attachment: fixed;
+    min-height: 100vh;
 }
 
 #app {
-    max-width: var(--layout-max-width);
-    margin: 0 auto;
-    display: flex;
-    flex-flow: column nowrap;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
+    height: 100vh;
+    overflow: auto;
+    scrollbar-color: gray #00000000;
+
 }
 </style>

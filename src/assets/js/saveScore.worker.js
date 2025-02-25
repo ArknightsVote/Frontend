@@ -1,6 +1,3 @@
-/* eslint-disable no-restricted-globals */
-/* eslint-disable ts/ban-ts-comment */
-// @ts-nocheck
 self.onmessage = async function (event) {
   const { SERVER_ADDRESS, win_name, lose_name, code, ID_NAME_DICT } = event.data
 

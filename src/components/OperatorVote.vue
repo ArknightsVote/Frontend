@@ -23,7 +23,7 @@ const {
   onFetchResponse,
   onFetchError,
   execute: loadVote,
-} = useFetch<NewCompareResponse>('new_compare', { immediate: false })
+} = useFetch<NewCompareResponse>('/new_compare', { immediate: false })
   .post(compareBody)
   .json()
 
@@ -122,52 +122,20 @@ async function voteForWinner(winnerIndex: number) {
 </script>
 
 <template>
-  <ShadowCard class="operator-vote">
-    <slot name="header" />
-    <div class="vote">
-      <OperatorAvatar class="operator" :target="currentVote?.[0].name" :hover-filter="true" @click="voteForWinner(0)" />
+  <div>
+    <slot name="top" />
+    <div flex gap-4>
+      <OperatorAvatar :target="currentVote?.[0].name" :hover-filter="true" @click="voteForWinner(0)" />
       <slot name="middle" />
-      <OperatorAvatar class="operator" :target="currentVote?.[1].name" :hover-filter="true" @click="voteForWinner(1)" />
+      <OperatorAvatar :target="currentVote?.[1].name" :hover-filter="true" @click="voteForWinner(1)" />
     </div>
-    <div class="footer">
-      <slot name="footer" />
-      <Button class="next-btn" :is-loading="newCompareIsFetching" @click="skipCurrentVote">
+    <div flex gap-4 mt-3>
+      <div flex-1 flex>
+        <slot name="bottom" />
+      </div>
+      <button btn :is-loading="newCompareIsFetching" @click="skipCurrentVote">
         换一组
-      </Button>
+      </button>
     </div>
-  </ShadowCard>
+  </div>
 </template>
-
-<style scoped>
-.operator-vote {
-    display: flex;
-    flex-flow: column nowrap;
-}
-
-.vote {
-  position: relative;
-  display: flex;
-  flex-flow: row nowrap;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 20px;
-}
-
-.operator-placeholder {
-    width: 180px;
-    height: 360px;
-}
-
-.operator {
-  cursor: pointer;
-}
-
-.footer {
-    display: flex;
-    flex-flow: row;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 20px;
-}
-</style>

@@ -39,14 +39,14 @@ button {
     cursor: pointer
 }
 
-a {
-    color: #666;
+/* a {
+    color: var(--c-text-3);
     text-decoration: none
 }
 
 a:hover {
-    color: #c81623
-}
+    color: var(--c-red-1);
+} */
 
 button,
 input {

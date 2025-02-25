@@ -2,17 +2,17 @@
 const { width: screenWidth, height: screenHeight } = useWindowSize()
 const { x, y } = usePointer()
 
-const el = useTemplateRef('el')
-const { width, height } = useElementSize(el)
-
 const style = shallowRef({})
 
-const update = useThrottleFn(() => {
-  if (!el.value)
-    return
+const threshold = 21
+const size = 60
 
-  const left = x.value + width.value + 21 > screenWidth.value ? x.value - width.value - 21 : x.value
-  const top = y.value + height.value + 21 > screenHeight.value ? y.value - height.value - 21 : y.value
+const update = useThrottleFn(() => {
+  const _x = x.value + threshold
+  const _y = y.value + threshold
+
+  const left = _x + size > screenWidth.value ? x.value - size - threshold : _x
+  const top = _y + size > screenHeight.value ? y.value - size - threshold : _y
 
   style.value = {
     left: `${left}px`,
@@ -20,12 +20,11 @@ const update = useThrottleFn(() => {
   }
 }, 60)
 
-watch([width, height, x, y], update)
+watch([x, y], update)
 </script>
 
 <template>
   <img
-    ref="el"
     class="mouse-follower"
     src="../assets/images/夕trans.gif"
     :style="style"
@@ -35,11 +34,15 @@ watch([width, height, x, y], update)
 <style scoped>
 .mouse-follower {
     position: fixed;
-    z-index: 99999;
-    width: 100px;
+    z-index: 9999;
     vertical-align: middle;
-    transition: left 0.3s ease, top 0.3s ease;
+    transition: left .15s ease, top .15s ease;
     user-select: none;
     pointer-events: none;
+
+    object-fit: cover;
+    width: 60px;
+    aspect-ratio: 1;
+
 }
 </style>

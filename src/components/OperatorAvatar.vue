@@ -1,51 +1,32 @@
 <script setup lang="ts">
 const { target } = defineProps<{
   target?: OperatorTarget
-  hoverFilter?: boolean
 }>()
 
 const operator = computed(() => target ? findOperator(target) : undefined)
 </script>
 
 <template>
-  <div class="operator" :class="{ 'operator-filter': hoverFilter }">
-    <div class="avatar-container">
-      <img v-if="operator" class="avatar" :src="operator.avatar" width="180" height="360">
+  <div class="w-[180px] aspect-[1/2] relative">
+    <div class="size-full">
+      <img
+        v-if="operator"
+        class="size-full"
+        :src="operator.avatar"
+      >
     </div>
-    <div class="zh name">
+    <div
+      absolute
+      bottom-0
+      left-0
+      w-full
+      font-bold
+      bg-gradient-to-l
+      from-yellow-500
+      text=" white right"
+      p="r-2 y-1"
+    >
       {{ operator?.name }}
     </div>
   </div>
 </template>
-
-<style scoped>
-.operator {
-    position: relative;
-}
-
-.avatar {
-    width: 100%;
-    object-fit: cover;
-}
-
-.name {
-    position: absolute;
-    width: 100%;
-    left: 0;
-    bottom: 2px;
-    text-align: center;
-    color: var(--c-bg-elv);
-    font-weight: bold;
-}
-
-.operator-filter:hover {
-    filter: var(--drop-shadow-1);
-    transition: filter .1s ease-in-out;
-}
-
-.avatar-container {
-    position: relative;
-    width: 180px;
-    aspect-ratio: 1 / 2;
-}
-</style>

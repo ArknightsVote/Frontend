@@ -1,7 +1,8 @@
 # auto
 .unimport-items.json
-auto-imports.d.ts
-components.d.ts
+src/auto-imports.d.ts
+src/auto-components.d.ts
+src/auto-router.d.ts
 
 # Logs
 logs

@@ -15,7 +15,17 @@ interface TransformLabel {
 
 export interface TableProps {
 /**
- * key 是
+ * labels 中的 key 对应 data 中的 key
+ *
+ * @example
+ *
+ * ```ts
+ * const data = { names: [] }
+ * const labels = [ { key: 'names', text: '干员' } ]
+ *
+ * // 提供 transform 生成的数据列可以不在 data 中
+ * const labels = [ { text: '序号', transform: (col) => col + 1 } ]
+ * ```
  */
   data: Record<string, any[]>
   labels: (KeyLabel | TransformLabel)[]
@@ -25,8 +35,6 @@ export interface TableProps {
    */
   idkey?: string
   tbodyStyle?: CSSProperties
-
-  title?: string
 }
 
 const props = defineProps<TableProps>()
@@ -39,22 +47,26 @@ function isKeyLabel(label: KeyLabel | TransformLabel): label is KeyLabel {
 </script>
 
 <template>
-  <table>
-    <caption>
-      <span
-        v-if="title"
-        class="title"
-      >
-        {{ title }}
-      </span>
+  <table
+    w-full
+    table-auto
+    border-collapse
+    text="center lg"
+  >
+    <caption caption-top p-4>
       <slot name="caption" />
     </caption>
-    <thead>
-      <tr>
+    <thead
+      sticky
+      top-0
+    >
+      <tr bg-indigo-500 text-white>
         <th
           v-for="label in labels"
           :key="label.text"
-          :style="label.style"
+          py-2
+          px-4
+          break-keep
         >
           {{ label.text }}
         </th>
@@ -65,65 +77,20 @@ function isKeyLabel(label: KeyLabel | TransformLabel): label is KeyLabel {
         <tr
           v-for="(k, col) in trs"
           :key="idkey ? k : col"
+          odd="bg-slate-200/50"
+          even="bg-slate-100/70"
         >
           <td
             v-for="(label, index) in labels"
             :key="index"
-            :style="label.style"
+            py-2
+            px-4
+            break-keep
           >
-            {{
-              isKeyLabel(label) ? data[label.key][col] : label.transform(col)
-            }}
+            {{ isKeyLabel(label) ? data[label.key][col] : label.transform(col) }}
           </td>
         </tr>
       </slot>
     </tbody>
   </table>
 </template>
-
-<style scoped>
-table,
-caption,
-thead,
-tbody,
-tfoot {
-    display: block;
-}
-
-table {
-    border-collapse: collapse;
-    margin: 0;
-    padding: 0;
-    overflow: auto;
-}
-
-caption {
-    display: flex;
-    justify-content: space-between;
-}
-
-.title {
-    flex: 1;
-    font-size: 1.2em;
-    font-weight: bold;
-    text-align: left;
-}
-
-thead {
-    position: sticky;
-    top: 0;
-}
-
-tbody {
-    overflow: auto;
-}
-
-th,
-:slotted(td) {
-    margin: 0;
-    padding: 6px;
-    text-align: center;
-    border: 1px solid #ccc;
-    border: none;
-}
-</style>

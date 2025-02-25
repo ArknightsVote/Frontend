@@ -1,19 +1,30 @@
 import { resolve } from 'node:path'
 import vue from '@vitejs/plugin-vue'
+import UnoCSS from 'unocss/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
+import VueRouter from 'unplugin-vue-router/vite'
 import { defineConfig } from 'vite'
 import Inspect from 'vite-plugin-inspect'
 import { viteMockServe } from 'vite-plugin-mock'
 
 // https://vite.dev/config/
 export default defineConfig((env) => {
+  const isDev = env.command === 'serve'
+
+  const stringify = JSON.stringify
+
   return {
     define: {
-      __DEV__: JSON.stringify(env.command === 'serve'),
+      __DEV__: stringify(isDev),
     },
     plugins: [
+      VueRouter({
+        routesFolder: 'src/pages',
+        dts: 'src/auto-router.d.ts',
+      }),
       vue(),
+      UnoCSS(),
       AutoImport({
         include: [
           /\.[tj]sx?$/,
@@ -47,14 +58,14 @@ export default defineConfig((env) => {
       }),
 
       Components({
-        dts: 'src/components.d.ts',
+        dts: 'src/auto-components.d.ts',
       }),
 
       Inspect(),
 
       viteMockServe({
-        mockPath: './mocks',
-        enable: env.command === 'serve',
+        mockPath: './mock',
+        enable: isDev,
         // enable: false,
       }),
     ],

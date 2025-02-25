@@ -2,7 +2,7 @@
  * Layout
  */
 :root {
-  --layout-max-width: 723px;
+  --layout-max-width: 1224px;
 }
 
 /**
@@ -10,13 +10,13 @@
  */
 :root {
   --c-text-1: #000;
-  --c-text-2: #000;
-  --c-text-3: #000;
+  --c-text-2: #333;
+  --c-text-3: #666;
 
   --c-bg: #fff;
   --c-bg-alt: #f8f8f8;
   --c-bg-elv: #ffffff;
-  --c-bg-soft: rgba(250, 250, 250, 0.87);;
+  --c-bg-soft: rgba(250, 250, 250, 0.9);;
 
   --c-border: rgba(0, 0, 0, 0.08);
 
