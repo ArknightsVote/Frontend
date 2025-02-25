@@ -2,9 +2,11 @@
 
 vite + vue3 + typescript
 
-- 正在美化中 ...
-- 正在补细节中 ...
-- 正在优化中 ...
+<p align="center">
+  <img src="docs/imgs/intro-1.jpg" width="300" style="margin: 10px;" />
+  <img src="docs/imgs/intro-2.jpg" width="300" style="margin: 10px;" />
+  <img src="docs/imgs/intro-3.jpg" width="300" style="margin: 10px;" />
+</p>
 
 ## 使用
 
