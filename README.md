@@ -39,7 +39,7 @@ npm run dev
     // ....
 
     viteMockServe({
-      mockPath: './mocks',
+      mockPath: './mock',
       // enable: idDev,
       enable: false,
     }),
