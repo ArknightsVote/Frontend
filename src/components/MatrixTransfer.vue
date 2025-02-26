@@ -33,7 +33,7 @@ function filterUnselectedList() {
   })
 }
 
-const filterUnselectedListDebounce = useDebounceFn(filterUnselectedList, 300)
+const filterUnselectedListDebounce = useDebounceFn(filterUnselectedList, 200)
 
 function clearSearch() {
   search.value = ''
@@ -71,11 +71,10 @@ function clearSearch() {
     </div>
     <div
       flex
-      gap-2
       style="height: calc(100% - 3rem);"
     >
       <MatrixTransferGroup v-model="unselectedList" title="干员" />
-      <MatrixTransferGroup v-model="selectedList" title="已选" />
+      <MatrixTransferGroup v-model="selectedList" title="已选" bg />
     </div>
   </div>
 </template>

@@ -6,10 +6,10 @@ interface LocalVoteItem {
   win_rate: number
 }
 
-type LocalVoteResult = Record<Operator['name'], LocalVoteItem>
+type LocalVoteData = Record<Operator['name'], LocalVoteItem>
 
 export function useLocalVote() {
-  const data = useStorage(STORAGE_KEYS.VOTE_RESULT, {} as LocalVoteResult)
+  const data = useStorage(STORAGE_KEYS.VOTE_RESULT, {} as LocalVoteData)
 
   /**
    * 创建数据项，确保类型一致
@@ -22,7 +22,7 @@ export function useLocalVote() {
     return data.value[name] || createVoteItem()
   }
 
-  function updateResult(name: OperatorName, item: Partial<LocalVoteItem>) {
+  function updateData(name: OperatorName, item: Partial<LocalVoteItem>) {
     const opter = data.value[name] || createVoteItem()
     data.value = { ...data.value, [name]: { ...opter, ...item } }
   }
@@ -32,7 +32,7 @@ export function useLocalVote() {
    */
   function assignWinner(name: OperatorName) {
     const opter = getVoteItem(name)
-    updateResult(name, {
+    updateData(name, {
       vote_times: opter.vote_times + 1,
       win_times: opter.win_times + 1,
       scores: opter.scores + 1,
@@ -45,7 +45,7 @@ export function useLocalVote() {
    */
   function assignLoser(name: OperatorName) {
     const opter = getVoteItem(name)
-    updateResult(name, {
+    updateData(name, {
       vote_times: opter.vote_times + 1,
       lose_times: opter.lose_times + 1,
       scores: opter.scores - 1,
@@ -53,33 +53,9 @@ export function useLocalVote() {
     })
   }
 
-  /**
-   * 获取本地自己投票的数据
-   *
-   * 返回类型和接口 `/view_final_order` 的一致
-   */
-  function getSortedData() {
-    const name: OperatorName[] = []
-    const rate: number[] = []
-    const score: number[] = []
-
-    const entries = Object.entries(data.value)
-      .map(([opterName, { win_rate, scores }]) => ({ name: opterName, rate: win_rate, score: scores }))
-      .sort((a, b) => b.rate - a.rate)
-
-    entries.forEach((d) => {
-      name.push(d.name as OperatorName)
-      rate.push(d.rate)
-      score.push(d.score)
-    })
-
-    return { name, rate, score }
-  }
-
   return {
     data,
     assignWinner,
     assignLoser,
-    getSortedData,
   }
 }

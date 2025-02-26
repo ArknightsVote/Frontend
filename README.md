@@ -1,11 +1,10 @@
 # 明日方舟六星 强度投票箱前端
 
-vite + vue3 + typescript
-
 <p align="center">
   <img src="docs/imgs/intro-1.jpg" width="300" style="margin: 10px;" />
   <img src="docs/imgs/intro-2.jpg" width="300" style="margin: 10px;" />
   <img src="docs/imgs/intro-3.jpg" width="300" style="margin: 10px;" />
+  <img src="docs/imgs/intro-4.jpg" width="300" style="margin: 10px;" />
 </p>
 
 ## 使用
@@ -41,7 +40,7 @@ npm run dev
 
     viteMockServe({
       mockPath: './mocks',
-      // enable: env.command === 'serve',
+      // enable: idDev,
       enable: false,
     }),
   ]

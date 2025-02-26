@@ -8,6 +8,7 @@ interface ListItem {
 
 defineProps<{
   title: string
+  bg?: boolean
 }>()
 
 const list = defineModel<ListItem[]>()
@@ -17,7 +18,7 @@ const { height } = useElementSize(el)
 </script>
 
 <template>
-  <div h-full flex="~ 0 col w-48 select-none">
+  <div h-full flex="~ 0 col w-36 select-none">
     <h3 font-bold text-right py-2 pr-2 text-lg>
       {{ title }}
     </h3>
@@ -26,14 +27,9 @@ const { height } = useElementSize(el)
       w-48
       flex-1
       overflow-auto
-      un-border="~ slate-400"
-      rounded
+
       text-right
       select-none
-      relative
-
-      bg-gradient-to-lt
-      from-indigo-100
     >
       <draggable
         :list="list"
@@ -48,7 +44,12 @@ const { height } = useElementSize(el)
             pr-6
             font-bold
             cursor-pointer
-            text-slate-900
+            bg-gradient-to-l
+            :class="{
+              'from-amber-500 text-white': bg,
+            }"
+            hover="text-indigo-500"
+            transition-color
           >
             {{ element.name }}
           </div>

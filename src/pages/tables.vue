@@ -8,10 +8,10 @@
     z-1
     container
   >
-    <router-view v-slot="{ Component }">
-      <transition name="slide" mode="out-in">
+    <router-view v-slot="{ Component, route }">
+      <transition name="slide">
         <keep-alive>
-          <component :is="Component" />
+          <component :is="Component" :key="route.path" />
         </keep-alive>
       </transition>
     </router-view>
@@ -19,19 +19,17 @@
 </template>
 
 <style scoped>
-.slide-move,
-.slide-enter-active,
-.slide-leave-active {
-  transition: .3s all ease-in;
+.slide-fade-enter-active {
+  transition: all 0.3s ease-out;
 }
 
-.slide-enter-from {
-  opacity: 0;
-  transition: translateX(50px);
+.slide-fade-leave-active {
+  transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
 }
 
-.slide-leave-to {
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateX(20px);
   opacity: 0;
-  transition: rotateZ(-10deg);
 }
 </style>

@@ -20,11 +20,10 @@ const operator = computed(() => target ? findOperator(target) : undefined)
       bottom-0
       left-0
       w-full
-      font-bold
       bg-gradient-to-l
-      from-yellow-500
+      from-amber-500
       text=" white right"
-      p="r-2 y-1"
+      p="r-3 y-2"
     >
       {{ operator?.name }}
     </div>

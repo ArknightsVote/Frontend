@@ -11,6 +11,9 @@ const labels = computed(() => {
     {
       text: '',
       key: 'names',
+      style: {
+        fontWeight: 'bold',
+      },
     },
     ...selectedList.value.map((el) => {
       return {
@@ -40,20 +43,37 @@ const showData = computed(() => {
 </script>
 
 <template>
-  <div size-full flex p-4 gap-4>
-    <MatrixTransfer v-model="selectedList" p-4 rounded un-border="~ slate-400" />
+  <div size-full flex py-4 gap-4>
+    <MatrixTransfer
+      v-model="selectedList"
+      un-border="~ slate-400"
+      class="bg-white/70 p-4 rounded"
+    />
 
     <div
       flex-1
       overflow-auto
       h-full
       rounded
-      p-4
-      bg-gradient-to-lt
-      from-indigo-300
       un-border="~ slate-400"
+      class="bg-white/70"
     >
-      <Table :labels="labels" :data="showData" idkey="names" title="1v1 矩阵" />
+      <div v-show="!selectedList.length" size-full flex flex-col items-center justify-center>
+        <p text="xl" font-bold>
+          还未选择干员~
+        </p>
+        <p text="sm" text-slate-600>
+          您可以将干员名拖动到已选区域
+        </p>
+      </div>
+      <Table
+        v-show="selectedList.length"
+        :labels="labels"
+        :data="showData"
+        idkey="names"
+        title="1v1 矩阵"
+        :fix-index="true"
+      />
     </div>
   </div>
 </template>

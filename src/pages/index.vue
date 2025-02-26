@@ -1,5 +1,15 @@
+<script setup lang="ts">
+
+</script>
+
 <template>
-  <div class="flex flex-col items-center justify-center size-full">
+  <div
+    flex
+    flex-col
+    items-center
+    justify-center
+    size-full
+  >
     <SiteTitle
       pb-8
       leading-tight
