@@ -1,5 +1,5 @@
 <template>
-  <FixedCG />
+  <FixedCG z--1 />
 
   <MouseFollower />
   <router-view v-slot="{ Component }">
@@ -21,6 +21,6 @@ body {
     height: 100vh;
     overflow: auto;
     scrollbar-color: gray #00000000;
-
+    position: relative;
 }
 </style>

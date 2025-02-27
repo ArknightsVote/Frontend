@@ -1,5 +1,7 @@
 <script setup lang="ts">
-const { data } = useApi('/view_final_order').get().json()
+import { viewFinalOrder } from '@/api'
+
+const { data } = viewFinalOrder()
 
 const labels = [
   { text: '干员代号', key: 'name' },

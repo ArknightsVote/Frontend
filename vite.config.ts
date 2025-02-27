@@ -79,18 +79,22 @@ export default defineConfig((env) => {
     },
     server: {
       proxy: {
-        //   '/new_compare': {
-        //     target: 'https://vote.ltsc.vip',
-        //     changeOrigin: true,
-        //   },
-        //   '/save_score': {
-        //     target: 'https://vote.ltsc.vip',
-        //     changeOrigin: true,
-        //   },
-        //   '/view_final_order': {
-        //     target: 'https://vote.ltsc.vip',
-        //     changeOrigin: true,
-        //   },
+        // '/new_compare': {
+        //   target: 'https://vote.ltsc.vip',
+        //   changeOrigin: true,
+        // },
+        // '/save_score': {
+        //   target: 'https://vote.ltsc.vip',
+        //   changeOrigin: true,
+        // },
+        // '/view_final_order': {
+        //   target: 'https://vote.ltsc.vip',
+        //   changeOrigin: true,
+        // },
+        // '/get_operators_1v1_matrix': {
+        //   target: 'https://vote.ltsc.vip',
+        //   changeOrigin: true,
+        // },
       },
     },
   }

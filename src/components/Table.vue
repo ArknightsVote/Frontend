@@ -52,7 +52,15 @@ export interface TableProps {
 const props = defineProps<TableProps>()
 
 // 唯一标识列
-const idColItems = computed(() => props.idkey ? props.data[props.idkey] : props.data[Object.keys(props.data)[0]])
+const idColItems = computed(() => {
+  const colKeys = Object.keys(props.data)
+
+  if (!props.idkey && !colKeys.length) {
+    return []
+  }
+
+  return props.idkey ? props.data[props.idkey] : props.data[colKeys[0]]
+})
 
 function isKeyLabel(label: KeyLabel | TransformLabel): label is KeyLabel {
   return Object.hasOwnProperty.call(label, 'key')
@@ -60,7 +68,12 @@ function isKeyLabel(label: KeyLabel | TransformLabel): label is KeyLabel {
 
 function getValue(row: number, col: number) {
   const label = props.labels[col]
-  return isKeyLabel(label) ? props.data[label.key][row] : label.transform(row)
+  if (isKeyLabel(label)) {
+    const val = props.data[label.key]?.[row]
+    return val ?? 'null'
+  }
+
+  return label.transform(row)
 }
 
 //

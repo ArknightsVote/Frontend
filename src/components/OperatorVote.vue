@@ -1,9 +1,5 @@
 <script setup lang='ts'>
-interface NewCompareResponse {
-  left: number
-  right: number
-  code: string
-}
+import { newCompare as apiNewCompare, saveScore as apiSaveScore } from '@/api'
 
 const { current: currentVote, voteFor, pushVote, popVote } = useVoteQueue<Operator>()
 
@@ -23,9 +19,7 @@ const {
   onFetchResponse,
   onFetchError,
   execute: loadVote,
-} = useFetch<NewCompareResponse>('/new_compare', { immediate: false })
-  .post(compareBody)
-  .json()
+} = apiNewCompare(compareBody)
 
 /**
  * 切换对比的干员
@@ -87,13 +81,11 @@ function updateLocalVote(winnerName: OperatorName, loserName: OperatorName) {
 // -----------------------------------------------------------
 
 async function upLoadVote(winnerId: number, loserId: number) {
-  return useApi('save_score').post(
-    {
-      code: code.value,
-      win_id: winnerId,
-      lose_id: loserId,
-    },
-  )
+  return apiSaveScore({
+    code: code.value,
+    win_id: winnerId,
+    lose_id: loserId,
+  })
 }
 
 // vote
@@ -124,12 +116,23 @@ async function voteForWinner(winnerIndex: number) {
 <template>
   <div>
     <slot name="top" />
+
     <div flex gap-4>
-      <OperatorAvatar :target="currentVote?.[0].name" :hover-filter="true" @click="voteForWinner(0)" />
+      <OperatorAvatar
+        :target="currentVote?.[0].name"
+        cursor-pointer
+        @click="voteForWinner(0)"
+      />
+
       <slot name="middle" />
-      <OperatorAvatar :target="currentVote?.[1].name" :hover-filter="true" @click="voteForWinner(1)" />
+
+      <OperatorAvatar
+        :target="currentVote?.[1].name"
+        cursor-pointer
+        @click="voteForWinner(1)"
+      />
     </div>
-    <div flex gap-4 mt-3>
+    <div flex gap-4 mt-4>
       <div flex-1 flex>
         <slot name="bottom" />
       </div>

@@ -1,10 +1,12 @@
 <script setup lang='ts'>
+import { getOperators1v1Matrix } from '@/api'
+
 interface ListItem {
   name: OperatorName
   index: number
 }
 const selectedList = ref<ListItem[]>([])
-const { data } = useApi<number[][]>('/get_operators_1v1_matrix').post().json()
+const { data } = getOperators1v1Matrix()
 
 const labels = computed(() => {
   return [
