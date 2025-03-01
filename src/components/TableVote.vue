@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import type { CSSProperties } from 'vue'
 import type { TableProps } from './Table.vue'
-import { getBestCluster } from '@/utils/getBestCluster'
-import { getColors } from '@/utils/getColors'
+import { getBestCluster, getNClassesCluster } from '@/utils/getBestCluster'
 
 type Label = TableProps['labels'][number]
 
@@ -22,6 +21,7 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+
 //
 // label: order
 // -----------------------------------------
@@ -51,27 +51,33 @@ const cupLabel = computed(() => {
 })
 
 //
+// label: color
 // -----------------------------------------
 
-const showLables = computed(() => {
-  const labels = [orderLabel, ...props.labels]
-  if (cupLabel.value) {
-    labels.unshift(cupLabel.value)
-  }
-  return labels
-})
-const showData = computed(() => props.data)
+const colors = shallowRef<string[]>([])
+
+const colorLabel: Label = {
+  text: '区分度',
+  transform(_row: number) {
+    return ''
+  },
+  style(row: number) {
+    return {
+      backgroundColor: `#${colors.value[row]}`,
+      width: '1rem',
+    }
+  },
+}
 
 //
 // cluster list
 // -----------------------------------------
-
+const nclasses = ref<number | undefined>(undefined)
 const clusterKey = computed(() => props.clusterKey || 'rate')
 
 const GVF = ref(0)
-const colors = shallowRef<string[]>([])
 
-function updateCluster(data: Props['data'], clusterKey: string) {
+function updateClusterData(data: Props['data'], clusterKey: string, nclses?: number) {
   if (!data?.[clusterKey]?.length) {
     if (__DEV__) {
       console.error(
@@ -80,61 +86,86 @@ function updateCluster(data: Props['data'], clusterKey: string) {
         `\nvalue: ${JSON.stringify(data[clusterKey])}`,
       )
     }
-    return false
   }
 
   const clusterList = data[clusterKey].map(r => Number.parseFloat(r))
-  const { data: items, GVF: gvf } = getBestCluster(clusterList)
+  const res = nclses === undefined
+    ? getBestCluster(clusterList)
+    : getNClassesCluster(clusterList, nclses)
 
-  colors.value = getColors(items.reverse())
-  GVF.value = gvf
-
-  return true
+  colors.value = res.colors
+  GVF.value = res.GVF
+  nclasses.value = res.nclasses
 }
 
-watch(
-  () => [props.data, clusterKey],
-  () => updateCluster(props.data, clusterKey.value),
+watchOnce(
+  () => [props.data],
+  () => updateClusterData(props.data, clusterKey.value),
   { immediate: true },
 )
+
+const nclassesDebounced = useDebounce(nclasses, 500)
+watch(nclassesDebounced, (value, oldval) => {
+  if (oldval === undefined)
+    return
+  updateClusterData(props.data, clusterKey.value, value)
+})
+
+//
+// -----------------------------------------
+
+const showLabels = computed(() => {
+  const labels = [orderLabel, ...props.labels]
+  if (cupLabel.value) {
+    labels.unshift(colorLabel, cupLabel.value)
+  }
+  return labels
+})
+const showData = computed(() => props.data)
 </script>
 
 <template>
   <Table
     :idkey="idKey"
     :data="showData"
-    :labels="showLables"
+    :labels="showLabels"
     :tbody-style="tbodyStyle"
     :export-table="exportTable"
+    :flex-row="true"
     class="text-lg"
   >
-    <template #caption>
-      <div flex justify-between text-left>
-        <div flex-1 font-bold>
-          <slot name="caption" />
-        </div>
-        <span inline-block ml-auto mr-0>
+    <template #function>
+      <div
+        mt-4
+        un-border="~ slate-400"
+        class="bg-white/70 p-4 rounded"
+        space-y-3
+      >
+        <label for="nclasses">
+          分层数:
+          <input
+            id="nclasses"
+            v-model="nclasses"
+            type="number"
+            min="1"
+            max="9"
+            un-border
+            rounded
+            px-2
+            outline-none
+            class=" in-range:border-green-500 out-of-range:border-red-500 invalid:border-red-500"
+          >
+        </label>
+        <p>
           区分度:
           {{ (GVF * 100).toFixed(2) }}%
-        </span>
+        </p>
       </div>
     </template>
-    <template #tbody="{ getValue, idColItems }">
-      <tr
-        v-for="(idkey, row) in idColItems"
-        :key="idkey"
-        :style="{
-          backgroundColor: `#${colors[row]}aa`,
-        }"
-      >
-        <td
-          v-for="(label, col) in showLables"
-          :key="label.text"
-          py-2
-        >
-          {{ getValue(row, col) }}
-        </td>
-      </tr>
+    <template #caption>
+      <div font-bold text-left>
+        <slot name="caption" />
+      </div>
     </template>
   </Table>
 </template>

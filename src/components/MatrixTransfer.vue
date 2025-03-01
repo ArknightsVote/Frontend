@@ -1,5 +1,5 @@
 <script setup lang='ts'>
-import MatrixTransferGroup from './MatrixTransferGroup.vue'
+import type { PropType } from 'vue'
 
 interface ListItem {
   name: OperatorName
@@ -15,7 +15,10 @@ function getInitListItems() {
 const originList = getInitListItems()
 
 const unselectedList = ref<ListItem[]>([...originList])
-const selectedList = defineModel<ListItem[]>()
+const selectedList = defineModel<ListItem[]>({
+  type: Array as PropType<ListItem[]>,
+  default: () => [],
+})
 
 function clearSelectedList() {
   if (!selectedList.value?.length)

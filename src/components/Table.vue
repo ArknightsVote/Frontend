@@ -5,31 +5,18 @@ import { exportXLSX } from '@/utils/exportXlsx'
 interface KeyLabel {
   text: string
   key: string
-  style?: CSSProperties
+  style?: CSSProperties | ((row: number) => CSSProperties)
 }
 
-interface TransformLabel {
-  text: string
+interface TransformLabel extends Pick<KeyLabel, 'text', 'style'> {
   transform: (col: number) => string | number
-  style?: CSSProperties
 }
+
+type Data = Record<KeyLabel['key'], any[]>
 
 export interface TableProps {
-/**
- * labels 中的 key 对应 data 中的 key
- *
- * @example
- *
- * ```ts
- * const data = { names: [] }
- * const labels = [ { key: 'names', text: '干员' } ]
- *
- * // 提供 transform 生成的数据列可以不在 data 中
- * const labels = [ { text: '序号', transform: (col) => col + 1 } ]
- * ```
- */
-  data: Record<string, any[]>
   labels: (KeyLabel | TransformLabel)[]
+  data: Data
 
   /**
    * 哪列作为唯一标识
@@ -44,9 +31,14 @@ export interface TableProps {
   /**
    * 是否导出数据
    *
-   * 如果是字符串，该字符串作为文件名
+   * 如果是字符串，该字符串将作为文件名
    */
   exportTable?: boolean | string
+
+  /**
+   * 是否为 flex-row 布局
+   */
+  flexRow?: boolean
 }
 
 const props = defineProps<TableProps>()
@@ -76,6 +68,10 @@ function getValue(row: number, col: number) {
   return label.transform(row)
 }
 
+function getStyle(label: KeyLabel | TransformLabel, row: number) {
+  return typeof label.style === 'function' ? label.style(row) : label.style
+}
+
 //
 // 导出
 // ----------------------------------------
@@ -101,11 +97,16 @@ function exportData() {
 </script>
 
 <template>
-  <div>
-    <div v-if="exportTable" p-2 text-right>
-      <button btn @click="exportData">
+  <div :class="flexRow ? 'md:flex md:flex-row gap-4' : ''">
+    <div
+      p-2
+      flex="1/3"
+      :class="flexRow ? 'md:sticky md:top-0 md:h-full md:overflow-y-auto' : ''"
+    >
+      <button v-if="exportTable" ml-auto mr-0 block btn @click="exportData">
         导出
       </button>
+      <slot name="function" />
     </div>
 
     <table
@@ -114,7 +115,7 @@ function exportData() {
       border-collapse
       text="center"
     >
-      <caption v-if="$slots.caption" caption-top px-4 py-2>
+      <caption v-if="$slots.caption" caption-top px-2 py-2>
         <slot name="caption" />
       </caption>
       <thead
@@ -140,6 +141,7 @@ function exportData() {
             :key="idkey ? k : row"
             odd="bg-indigo-100/60"
             even="bg-indigo-200/60"
+            class="!hover:bg-indigo-500/60"
           >
             <td
               v-for="(label, col) in labels"
@@ -147,7 +149,7 @@ function exportData() {
               p-2
               break-keep
               whitespace-nowrap
-              :style="label.style"
+              :style="getStyle(label, row)"
               :class="fixIndex ? 'first:sticky first:left-0 z-1 first:bg-indigo-400 first:text-white' : ''"
             >
               {{ getValue(row, col) }}

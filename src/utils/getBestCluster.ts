@@ -1,6 +1,18 @@
-// eslint-disable-next-line ts/ban-ts-comment
-// @ts-expect-error
+/* eslint-disable ts/ban-ts-comment */
+/* eslint-disable perfectionist/sort-imports */
+// @ts-ignore
+import palette from 'google-palette'
+// @ts-ignore
 import Geostats from 'geostats'
+
+export function getColors(cluster_list: number[][]) {
+  const color_list: string[] = []
+  palette('rainbow', cluster_list.length, 0, 0.5, 0.95)
+    .forEach((color: string, i: number) => {
+      return color_list.push(...Array.from({ length: cluster_list[i].length }, () => color))
+    })
+  return color_list
+}
 
 function getClusterList(data_array: any, bound_list: any) {
   let i
@@ -55,10 +67,21 @@ export function getBestCluster(data_array: any) {
 
   return {
     data: cluster_list,
+    colors: getColors(cluster_list.reverse()),
     GVF,
+    nclasses,
   }
 }
 
-// export function getNClassesCluster(data_array: any, nclasses) {
+export function getNClassesCluster(clusterList: any, nclasses: number) {
+  const serie = new Geostats(clusterList)
+  const cluster_list = getClusterList(serie.serie, serie.getClassJenks2(nclasses))
+  const GVF = 1 - getSDCM(cluster_list) / serie.variance()
 
-// }
+  return {
+    data: cluster_list,
+    colors: getColors(cluster_list.reverse()),
+    nclasses,
+    GVF,
+  }
+}

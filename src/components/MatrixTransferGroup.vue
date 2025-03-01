@@ -11,7 +11,10 @@ defineProps<{
   bg?: boolean
 }>()
 
-const list = defineModel<ListItem[]>()
+const list = defineModel<ListItem[]>({
+  type: Array as PropType<ListItem[]>,
+  default: () => [],
+})
 
 const el = templateRef('el')
 const { height } = useElementSize(el)
