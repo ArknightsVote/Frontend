@@ -45,20 +45,24 @@ const showData = computed(() => {
 </script>
 
 <template>
-  <div size-full flex py-4 gap-4>
+  <div
+    size-full
+    flex
+    flex-col
+    md="flex-row"
+    py-4
+    gap-4
+  >
     <MatrixTransfer
       v-model="selectedList"
-      un-border="~ slate-400"
-      class="bg-white/70 p-4 rounded"
+      class="card grow-0"
     />
 
     <div
-      flex-1
+      card
+      md="flex-1 h-full"
       overflow-auto
-      h-full
-      rounded
-      un-border="~ slate-400"
-      class="bg-white/70"
+      p-0
     >
       <div v-show="!selectedList.length" size-full flex flex-col items-center justify-center>
         <p text="xl" font-bold>
@@ -72,9 +76,9 @@ const showData = computed(() => {
         v-show="selectedList.length"
         :labels="labels"
         :data="showData"
+        :fix-index="true"
         idkey="names"
         title="1v1 矩阵"
-        :fix-index="true"
       />
     </div>
   </div>

@@ -8,7 +8,7 @@ interface KeyLabel {
   style?: CSSProperties | ((row: number) => CSSProperties)
 }
 
-interface TransformLabel extends Pick<KeyLabel, 'text', 'style'> {
+interface TransformLabel extends Omit<KeyLabel, 'key'> {
   transform: (col: number) => string | number
 }
 
@@ -97,8 +97,11 @@ function exportData() {
 </script>
 
 <template>
-  <div :class="flexRow ? 'md:flex md:flex-row gap-4' : ''">
+  <div
+    :class="flexRow ? 'md:flex md:flex-row gap-4' : ''"
+  >
     <div
+      v-if="$slots.function || exportTable"
       p-2
       flex="1/3"
       :class="flexRow ? 'md:sticky md:top-0 md:h-full md:overflow-y-auto' : ''"
@@ -122,11 +125,10 @@ function exportData() {
         sticky
         top-0
       >
-        <tr bg-indigo-500 text-white>
+        <tr bg-indigo-400 text-white>
           <th
             v-for="label in labels"
             :key="label.text"
-            p-2
             break-keep
             whitespace-nowrap
           >
@@ -141,12 +143,11 @@ function exportData() {
             :key="idkey ? k : row"
             odd="bg-indigo-100/60"
             even="bg-indigo-200/60"
-            class="!hover:bg-indigo-500/60"
+            class="!hover:bg-white/30"
           >
             <td
               v-for="(label, col) in labels"
               :key="label.text"
-              p-2
               break-keep
               whitespace-nowrap
               :style="getStyle(label, row)"

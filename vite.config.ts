@@ -24,7 +24,9 @@ export default defineConfig((env) => {
         dts: 'src/auto-router.d.ts',
       }),
       vue(),
-      UnoCSS(),
+      UnoCSS({
+        inspector: false,
+      }),
       AutoImport({
         include: [
           /\.[tj]sx?$/,

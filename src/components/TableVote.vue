@@ -73,6 +73,7 @@ const colorLabel: Label = {
 // cluster list
 // -----------------------------------------
 const nclasses = ref<number | undefined>(undefined)
+
 const clusterKey = computed(() => props.clusterKey || 'rate')
 
 const GVF = ref(0)
@@ -105,9 +106,25 @@ watchOnce(
 )
 
 const nclassesDebounced = useDebounce(nclasses, 500)
+const nclassesRange = [1, 9]
+const nclassesTip = ref<string | null>()
 watch(nclassesDebounced, (value, oldval) => {
-  if (oldval === undefined)
+  if (oldval === undefined || value === undefined)
     return
+
+  if (Number.isNaN(value)) {
+    nclassesTip.value = '请输入数字'
+    return
+  }
+
+  if (value < nclassesRange[0] || value > nclassesRange[1]) {
+    nclassesTip.value = `范围 ${nclassesRange[0]} ~ ${nclassesRange[1]}`
+    return
+  }
+
+  if (nclassesTip.value) {
+    nclassesTip.value = null
+  }
   updateClusterData(props.data, clusterKey.value, value)
 })
 
@@ -132,16 +149,16 @@ const showData = computed(() => props.data)
     :tbody-style="tbodyStyle"
     :export-table="exportTable"
     :flex-row="true"
-    class="text-lg"
+    class="text-sm md:text-lg"
   >
     <template #function>
       <div
         mt-4
-        un-border="~ slate-400"
-        class="bg-white/70 p-4 rounded"
+        pt-6
+        card
         space-y-3
       >
-        <label for="nclasses">
+        <label for="nclasses" relative>
           分层数:
           <input
             id="nclasses"
@@ -155,6 +172,14 @@ const showData = computed(() => props.data)
             outline-none
             class=" in-range:border-green-500 out-of-range:border-red-500 invalid:border-red-500"
           >
+          <p
+            v-show="nclassesTip"
+            class="absolute -translate-y-full right-0 top-0"
+            text="red-500 sm"
+            pb-1
+          >
+            {{ nclassesTip }}
+          </p>
         </label>
         <p>
           区分度:

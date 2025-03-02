@@ -21,16 +21,14 @@ const { height } = useElementSize(el)
 </script>
 
 <template>
-  <div h-full flex="~ 0 col w-36 select-none">
+  <div h-full flex="~ 0 col select-none">
     <h3 font-bold text-right py-2 pr-2 text-lg>
       {{ title }}
     </h3>
     <div
       ref="el"
-      w-48
       flex-1
       overflow-auto
-
       text-right
       select-none
     >
@@ -39,6 +37,7 @@ const { height } = useElementSize(el)
         :animation="300"
         group="opter"
         item-key="index"
+
         :style="{ height: `${height}px` }"
       >
         <template #item="{ element }">

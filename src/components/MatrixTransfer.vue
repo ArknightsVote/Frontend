@@ -45,7 +45,7 @@ function clearSearch() {
 </script>
 
 <template>
-  <div h-full>
+  <div h-full md="w-80" lg="w-108">
     <div h-8 flex gap-2>
       <input
         v-model="search"
@@ -76,8 +76,8 @@ function clearSearch() {
       flex
       style="height: calc(100% - 3rem);"
     >
-      <MatrixTransferGroup v-model="unselectedList" title="干员" />
-      <MatrixTransferGroup v-model="selectedList" title="已选" bg />
+      <MatrixTransferGroup v-model="unselectedList" class="flex-1" title="干员" />
+      <MatrixTransferGroup v-model="selectedList" class="flex-1" title="已选" bg />
     </div>
   </div>
 </template>

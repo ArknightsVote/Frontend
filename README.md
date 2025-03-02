@@ -2,7 +2,8 @@
 
 ## 待完成
 
-- 首页信息太密集
+- 首页布局
+- 音乐控件
 - 请求是否正确
   - 若不正确，调整 `src/api` 下的返回值
 
@@ -15,7 +16,7 @@
   <img src="docs/imgs/intro-4.jpg" width="300" style="margin: 10px;" />
 
   <img src="docs/imgs/intro-home-1.jpg" width="300" style="margin: 10px;" />
-  <img src="docs/imgs/intro-home-2.jpg" width="100" style="margin: 10px;" />
+  <img src="docs/imgs/intro-home-2.jpg" width="150" style="margin: 10px;" />
 </p>
 
 ## 使用
