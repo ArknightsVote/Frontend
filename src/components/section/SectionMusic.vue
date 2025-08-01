@@ -14,6 +14,11 @@ const musicList = [
     name: '血狼打灰歌',
     src: '/src/assets/audio/xuelangdahui.mp3'
   },
+  {
+    id: 3,
+    name: '青花瓷',
+    src: '/src/assets/audio/qinghuaci.mp3'
+  }
 ]
 
 // 播放器状态
@@ -116,6 +121,17 @@ function onEnded() {
   nextTrack()
 }
 
+// 切换到指定歌曲
+function selectTrack(index: number) {
+  const wasPlaying = isPlaying.value
+  currentTrackIndex.value = index
+  nextTick(() => {
+    if (wasPlaying && audioRef.value) {
+      audioRef.value.play()
+    }
+  })
+}
+
 // 切换播放列表显示
 function togglePlaylist() {
   showPlaylist.value = !showPlaylist.value
@@ -144,7 +160,7 @@ onUnmounted(() => {
     />
 
     <!-- 播放器界面 -->
-    <Section title="音乐播放器" relative>
+    <Section title="血狼金曲播放器" relative>
       <div 
         absolute right-0 top-0 w-32 h-40 opacity-30 pointer-events-none
         bg-no-repeat bg-right bg-contain
@@ -268,7 +284,7 @@ onUnmounted(() => {
               bg="white/40" hover="bg-white/60 shadow-sm"
               border border-gray-200
               :class="{ 'bg-indigo-100/80 text-indigo-600 border-indigo-300': index === currentTrackIndex }"
-              @click="currentTrackIndex = index"
+              @click="selectTrack(index)"
             >
               <span text-xs text-gray-600 min-w-4>{{ index + 1 }}</span>
               <span flex-1 text-sm>{{ track.name }}</span>

@@ -66,7 +66,7 @@ function scrollToNextPage() {
 
         <!-- 音乐播放器 -->
         <div class="mb-8">
-          <SectionMusic />
+          <MusicPlayer />
         </div>
 
         <!-- 规则说明 -->
