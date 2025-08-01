@@ -1,5 +1,7 @@
 <template>
-  <h1 class="font-bold text-4xl py-3">
-    {{ SITE.title }}
-  </h1>
+  <div class="text-center">
+    <h1 class="font-bold text-2xl sm:text-3xl lg:text-5xl xl:text-6xl py-3 text-gray-800">
+      {{ SITE.title }}
+    </h1>
+  </div>
 </template>

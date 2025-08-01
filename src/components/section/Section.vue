@@ -5,11 +5,11 @@ defineProps<{
 </script>
 
 <template>
-  <div class="bg-white/70" px-4 py-2 rounded shadow-md font-bold>
-    <h2 v-if="title" text-xl font-bold pt-2>
+  <div class="bg-white/60 backdrop-blur-sm border border-gray-200 px-6 py-4 rounded-xl shadow-lg">
+    <h2 v-if="title" class="text-xl font-bold text-gray-800 mb-3 pb-2 border-b border-gray-200">
       {{ title }}
     </h2>
-    <section class="*:my-2 indent-lg">
+    <section class="text-gray-700 leading-relaxed">
       <slot />
     </section>
   </div>
