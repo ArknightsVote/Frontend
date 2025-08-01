@@ -1,6 +1,6 @@
 <script setup lang='ts'>
 import { useMusicStore } from '@/stores/music'
-import Section from './section/Section.vue'
+import Section from './Section.vue'
 
 const musicStore = useMusicStore()
 
