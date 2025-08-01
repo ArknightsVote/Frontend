@@ -14,36 +14,6 @@ const musicList = [
     name: '血狼打灰歌',
     src: '/src/assets/audio/xuelangdahui.mp3'
   },
-  {
-    id: 3,
-    name: '明日方舟主题曲',
-    src: '/src/assets/audio/tongtong.mp3'
-  },
-  {
-    id: 4,
-    name: '危机合约BGM',
-    src: '/src/assets/audio/xuelangdahui.mp3'
-  },
-  {
-    id: 5,
-    name: '切尔诺伯格主题',
-    src: '/src/assets/audio/tongtong.mp3'
-  },
-  {
-    id: 6,
-    name: '龙门币音效循环版',
-    src: '/src/assets/audio/xuelangdahui.mp3'
-  },
-  {
-    id: 7,
-    name: '博士，欢迎回来',
-    src: '/src/assets/audio/tongtong.mp3'
-  },
-  {
-    id: 8,
-    name: '理想城长歌',
-    src: '/src/assets/audio/xuelangdahui.mp3'
-  }
 ]
 
 // 播放器状态
