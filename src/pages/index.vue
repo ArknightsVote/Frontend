@@ -124,7 +124,7 @@ function handleClick() {
 
     <!-- 固定导航 - 左下角数据导航 -->
     <div
-      class="fixed bottom-6  left-4   flex flex-col gap-2  z-20"
+      class="fixed bottom-6 left-4 flex flex-col gap-2 z-20"
       sm="bottom-8 left-6 gap-3"
       lg="bottom-12 left-8 "
       xl="left-12 "
@@ -153,7 +153,6 @@ function handleClick() {
         sm="text-sm px-4 py-2.5"
         lg="text-base"
         @click="handleClick"
-        @touchstart="handleClick"
       >
         <span class="opacity-70">{{ isVotingPage ? '说明' : '投票' }}</span>
         <span class="text-xs lg:text-sm animate-pulse">{{ isVotingPage ? '↓' : '↑' }}</span>
