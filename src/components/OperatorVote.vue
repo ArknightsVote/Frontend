@@ -111,29 +111,6 @@ async function voteForWinner(winnerIndex: number) {
     })
   })
 }
-
-// 移动端触摸处理
-const isVoting = ref(false)
-
-function handleVoteClick(winnerIndex: number, event: Event) {
-  if (isVoting.value)
-    return
-
-  isVoting.value = true
-
-  // 立即移除触摸样式
-  const target = event.target as HTMLElement
-  if (target) {
-    target.style.transform = 'scale(1)'
-  }
-
-  voteForWinner(winnerIndex)
-
-  // 延迟重置状态
-  setTimeout(() => {
-    isVoting.value = false
-  }, 1000)
-}
 </script>
 
 <template>
@@ -144,17 +121,15 @@ function handleVoteClick(winnerIndex: number, event: Event) {
     <div class="flex flex-row gap-6 sm:gap-10 lg:gap-14 items-center justify-center mb-8 relative">
       <OperatorAvatar
         :target="currentVote?.[0].name"
-        class="cursor-pointer transform hover:scale-105 transition-transform duration-200 active:scale-95 touch-manipulation"
-        :class="{ 'pointer-events-none': isVoting }"
-        @click="handleVoteClick(0, $event)"
-        @touchstart="handleVoteClick(0, $event)"
+        class="cursor-pointer transform transition-transform duration-200 touch-manipulation"
+        @click="voteForWinner(0)"
       />
 
       <!-- 换一组按钮 - 放在两个角色之间 -->
       <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
         <button
           class="w-10 h-10 bg-white/80 hover:bg-white backdrop-blur-sm border border-gray-200 text-gray-600 hover:text-gray-800 rounded-full shadow-md hover:shadow-lg active:shadow-inner transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation transform hover:scale-110 active:scale-95 flex items-center justify-center"
-          :disabled="newCompareIsFetching || isVoting"
+          :disabled="newCompareIsFetching"
           @click="skipCurrentVote"
         >
           <svg v-if="newCompareIsFetching" class="animate-spin h-4 w-4" viewBox="0 0 24 24">
@@ -169,10 +144,8 @@ function handleVoteClick(winnerIndex: number, event: Event) {
 
       <OperatorAvatar
         :target="currentVote?.[1].name"
-        class="cursor-pointer transform hover:scale-105 transition-transform duration-200 active:scale-95 touch-manipulation"
-        :class="{ 'pointer-events-none': isVoting }"
-        @click="handleVoteClick(1, $event)"
-        @touchstart="handleVoteClick(1, $event)"
+        class="cursor-pointer transform transition-transform duration-200 touch-manipulation"
+        @click="voteForWinner(1)"
       />
     </div>
   </div>

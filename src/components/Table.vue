@@ -103,61 +103,68 @@ function exportData() {
     <div
       v-if="$slots.function || exportTable"
       p-2
-      flex="1/3"
       :class="flexRow ? 'md:sticky md:top-0 md:h-full md:overflow-y-auto' : ''"
     >
-      <button v-if="exportTable" ml-auto mr-0 block btn @click="exportData">
+      <button
+        v-if="exportTable"
+        ml-auto
+        mr-0
+        block
+        btn
+        class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
+        @click="exportData"
+      >
         导出
       </button>
       <slot name="function" />
     </div>
 
-    <table
-      w-full
-      table-auto
-      border-collapse
-      text="center"
-    >
-      <caption v-if="$slots.caption" caption-top px-2 py-2>
-        <slot name="caption" />
-      </caption>
-      <thead
-        sticky
-        top-0
+    <div flex-1 my-2 class="bg-white/90 backdrop-blur-sm rounded-lg shadow-md border border-gray-200/60 overflow-hidden">
+      <table
+        w-full
+        table-auto
+        border-collapse
+        text="center"
       >
-        <tr bg-indigo-400 text-white>
-          <th
-            v-for="label in labels"
-            :key="label.text"
-            break-keep
-            whitespace-nowrap
-          >
-            {{ label.text }}
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <slot name="tbody" :get-value="getValue" :id-col-items="idColItems">
-          <tr
-            v-for="(k, row) in idColItems"
-            :key="idkey ? k : row"
-            odd="bg-indigo-100/60"
-            even="bg-indigo-200/60"
-            class="!hover:bg-white/30"
-          >
-            <td
-              v-for="(label, col) in labels"
+        <caption v-if="$slots.caption" caption-top px-2 py-2>
+          <slot name="caption" />
+        </caption>
+        <thead sticky top-0>
+          <tr class="bg-blue-100 text-blue-800 font-semibold">
+            <th
+              v-for="label in labels"
               :key="label.text"
               break-keep
               whitespace-nowrap
-              :style="getStyle(label, row)"
-              :class="fixIndex ? 'first:sticky first:left-0 z-1 first:bg-indigo-400 first:text-white' : ''"
+              class="px-4 py-3"
             >
-              {{ getValue(row, col) }}
-            </td>
+              {{ label.text }}
+            </th>
           </tr>
-        </slot>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <slot name="tbody" :get-value="getValue" :id-col-items="idColItems">
+            <tr
+              v-for="(k, row) in idColItems"
+              :key="idkey ? k : row"
+              class="hover:bg-blue-50/60 transition-colors duration-200"
+              :class="row % 2 === 0 ? 'bg-white/60' : 'bg-gray-50/60'"
+            >
+              <td
+                v-for="(label, col) in labels"
+                :key="label.text"
+                break-keep
+                whitespace-nowrap
+                :style="getStyle(label, row)"
+                class="px-4 py-3 text-gray-700 font-medium"
+                :class="fixIndex ? 'first:sticky first:left-0 z-1 first:bg-blue-100 first:text-blue-800 first:font-semibold' : ''"
+              >
+                {{ getValue(row, col) }}
+              </td>
+            </tr>
+          </slot>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>

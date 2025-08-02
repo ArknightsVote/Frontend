@@ -1,1 +1,1 @@
-export const BASE_URL = __DEV__ ? '' : 'https://vote.ltsc.vip'
+export const BASE_URL = import.meta.env.DEV ? '' : 'https://vote.ltsc.vip'
