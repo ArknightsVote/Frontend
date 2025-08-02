@@ -7,6 +7,12 @@ const isHome = computed(() => route.path === '/')
 <template>
   <FixedCG z--1 />
   <MouseFollower />
+  
+  <!-- 全局音频组件 -->
+  <GlobalAudio />
+  
+  <!-- 音乐控制条（非首页显示） -->
+  <MusicControlBar v-if="!isHome" />
 
   <Nav v-if="!isHome" />
 

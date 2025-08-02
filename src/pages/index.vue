@@ -77,6 +77,11 @@ onMounted(() => {
           <SectionImportant />
         </div>
 
+        <!-- 音乐播放器 -->
+        <div class="mb-8">
+          <SectionMusicPlayer />
+        </div>
+
         <!-- 规则说明 -->
         <div class="mb-8">
           <SectionRule />
