@@ -4,7 +4,6 @@
 
 // 新版本 new_compare 接口类型定义
 export interface NewCompareRequest {
-  ballot_id: string
   topic_id: string
 }
 

@@ -16,16 +16,11 @@ import { TOPIC_ID, TOPIC_TYPE } from '@/constants/topic'
 
 /**
  * 获取新的比较对局
- * @param data - 包含 ballot_id 的参数，如果不提供则使用空字符串
  */
-export function newCompare(data?: MaybeRefOrGetter<{ ballot_id?: string }>) {
-  const requestData = computed(() => {
-    const inputData = toValue(data) || {}
-    return {
-      ballot_id: inputData.ballot_id || '',
-      topic_id: TOPIC_ID,
-    } satisfies NewCompareRequest
-  })
+export function newCompare() {
+  const requestData = computed(() => ({
+    topic_id: TOPIC_ID,
+  } satisfies NewCompareRequest))
 
   return useApi<NewCompareResponse>('/ballot/new', { immediate: false })
     .post(requestData)
