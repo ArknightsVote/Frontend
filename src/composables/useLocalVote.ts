@@ -36,7 +36,7 @@ export function useLocalVote() {
       vote_times: opter.vote_times + 1,
       win_times: opter.win_times + 1,
       scores: opter.scores + 1,
-      win_rate: Number.parseFloat(((opter.win_times + 1 / (opter.vote_times + 1)) * 100).toFixed(2)),
+      win_rate: Number.parseFloat((((opter.win_times + 1) / (opter.vote_times + 1)) * 100).toFixed(2)),
     })
   }
 

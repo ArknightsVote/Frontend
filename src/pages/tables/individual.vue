@@ -11,7 +11,7 @@ const showData = shallowRef<Record<string, any[]> | null>(null)
 
 function getSortedData(data: Record<string, { win_rate: number, scores: number }>) {
   const name: OperatorName[] = []
-  const rate: number[] = []
+  const rate: string[] = []
   const score: number[] = []
 
   const entries = Object.entries(data)
@@ -20,7 +20,7 @@ function getSortedData(data: Record<string, { win_rate: number, scores: number }
 
   entries.forEach((d) => {
     name.push(d.name as OperatorName)
-    rate.push(d.rate)
+    rate.push(`${d.rate}%`)
     score.push(d.score)
   })
 

@@ -1,15 +1,28 @@
+<script setup lang="ts">
+import { useTopicInfo } from '@/composables/useTopicInfo'
+
+const { topicInfo, votingPeriod, isVotingActive } = useTopicInfo()
+</script>
+
 <template>
   <Section>
     <div class="text-center space-y-3">
       <div class="bg-red-500/90 text-white px-4 py-3 rounded-lg shadow-md">
         <p class="font-bold text-lg">
-          净罪作战正式投票 2月19日05:00~2月26日04:59
+          {{ topicInfo?.name || '投票活动' }}正式投票 {{ votingPeriod }}
         </p>
       </div>
 
-      <div class="bg-yellow-500/90 text-white px-4 py-3 rounded-lg shadow-md">
+      <div 
+        :class="[
+          'px-4 py-3 rounded-lg shadow-md',
+          isVotingActive 
+            ? 'bg-green-500/90 text-white' 
+            : 'bg-yellow-500/90 text-white'
+        ]"
+      >
         <p class="font-bold">
-          本次投票已结束，最终结果稍后公布。
+          {{ isVotingActive ? '投票进行中，快来参与吧！' : '本次投票已结束，最终结果稍后公布。' }}
         </p>
       </div>
     </div>

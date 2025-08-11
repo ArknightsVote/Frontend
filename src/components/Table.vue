@@ -112,52 +112,86 @@ function exportData() {
       <slot name="function" />
     </div>
 
-    <table
+    <div
+      class="table-container"
       w-full
-      table-auto
-      border-collapse
-      text="center"
-    >
-      <caption v-if="$slots.caption" caption-top px-2 py-2>
-        <slot name="caption" />
-      </caption>
-      <thead
-        sticky
-        top-0
       >
-        <tr bg-indigo-400 text-white>
-          <th
-            v-for="label in labels"
-            :key="label.text"
-            break-keep
-            whitespace-nowrap
-          >
-            {{ label.text }}
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <slot name="tbody" :get-value="getValue" :id-col-items="idColItems">
-          <tr
-            v-for="(k, row) in idColItems"
-            :key="idkey ? k : row"
-            odd="bg-indigo-100/60"
-            even="bg-indigo-200/60"
-            class="!hover:bg-white/30"
-          >
-            <td
-              v-for="(label, col) in labels"
+      <table
+        w-full
+        table-auto
+        border-collapse
+        text="center"
+        >
+        <caption v-if="$slots.caption" caption-top px-2 py-2>
+          <slot name="caption" />
+        </caption>
+        <thead
+          sticky
+          top-0
+        >
+          <tr bg-indigo-400 text-white>
+            <th
+              v-for="label in labels"
               :key="label.text"
               break-keep
               whitespace-nowrap
-              :style="getStyle(label, row)"
-              :class="fixIndex ? 'first:sticky first:left-0 z-1 first:bg-indigo-400 first:text-white' : ''"
             >
-              {{ getValue(row, col) }}
-            </td>
+              {{ label.text }}
+            </th>
           </tr>
-        </slot>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <slot name="tbody" :get-value="getValue" :id-col-items="idColItems">
+            <tr
+              v-for="(k, row) in idColItems"
+              :key="idkey ? k : row"
+              odd="bg-indigo-100/60"
+              even="bg-indigo-200/60"
+              class="!hover:bg-white/30"
+            >
+              <td
+                v-for="(label, col) in labels"
+                :key="label.text"
+                break-keep
+                whitespace-nowrap
+                :style="getStyle(label, row)"
+                :class="fixIndex ? 'first:sticky first:left-0 z-1 first:bg-indigo-400 first:text-white' : ''"
+              >
+                {{ getValue(row, col) }}
+              </td>
+            </tr>
+          </slot>
+        </tbody>
+      </table>
+    </div>
+
+
   </div>
 </template>
+<style>
+/* 表格容器 - 需要相对定位 */
+.table-container {
+  position: relative;
+  overflow: hidden; /* 防止水印溢出 */
+  width: 100%;     /* 根据实际表格宽度调整 */
+}
+
+/* 水印样式 - 使用伪元素覆盖 */
+.table-container::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* 允许点击穿透 */
+  opacity: 0.15;        /* 水印透明度 */
+  
+  /* SVG 水印背景 - 倾斜45度重复 */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Ctext x='0' y='50%25' font-size='20' fill='black' transform='rotate(-45 100 100)' font-family='Arial'%3EArknightsVote%3C/text%3E%3C/svg%3E");
+  
+  background-repeat: repeat;
+  z-index: 100; /* 确保在表格上方 */
+}
+
+</style>

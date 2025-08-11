@@ -1,5 +1,6 @@
 <script setup lang='ts'>
 import { getOperators1v1Matrix } from '@/api'
+import { getOperator } from '@/shared/operator'
 
 interface ListItem {
   name: OperatorName
@@ -31,13 +32,38 @@ const showData = computed(() => {
     names: selectedList.value.map(el => el.name),
   }
 
-  if (!data.value) {
+  if (!data.value?.data) {
     return displayData
   }
 
+  const matrixData = data.value.data
   const selected = selectedList.value
-  selected.forEach(({ name, index: col }) => {
-    displayData[name] = selected.map(({ index: row }) => data.value[row][col] / 100)
+  
+  selected.forEach(({ name }) => {
+    displayData[name] = selected.map(({ name: rowName }) => {
+      // 根据干员名称获取真实的干员ID
+      const rowOperator = getOperator(rowName)
+      const colOperator = getOperator(name)
+      
+      if (!rowOperator || !colOperator) {
+        return 0
+      }
+      
+      const rowOperatorId = rowOperator.id
+      const colOperatorId = colOperator.id
+      
+      // 尝试两种可能的键名组合
+      const key1 = `${rowOperatorId}:${colOperatorId}`
+      const key2 = `${colOperatorId}:${rowOperatorId}`
+      
+      let value = matrixData[key1]
+      if (value === undefined) {
+        // 如果第一种组合不存在，尝试第二种组合并取负值
+        value = matrixData[key2] ? -matrixData[key2] : 0
+      }
+      
+      return value / 100
+    })
   })
 
   return displayData
