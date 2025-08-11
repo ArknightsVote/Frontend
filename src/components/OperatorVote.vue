@@ -7,19 +7,13 @@ const { current: currentVote, voteFor, pushVote, popVote } = useVoteQueue<Operat
 // -----------------------------------------------------------
 const ballotId = useStorage(STORAGE_KEYS.BALLOT_ID, '')
 
-const compareBody = computed(() => {
-  return {
-    ballot_id: ballotId.value,
-  }
-})
-
 const {
   data,
   isFetching: newCompareIsFetching,
   onFetchResponse,
   onFetchError,
   execute: loadVote,
-} = apiNewCompare(compareBody)
+} = apiNewCompare()
 
 /**
  * 切换对比的干员
