@@ -81,6 +81,53 @@ export default defineConfig((env) => {
     },
     server: {
       proxy: {
+        // 新的后端代理配置
+        '/ballot/new': {
+          target: 'http://210.16.166.179:3000',
+          changeOrigin: true,
+        },
+        '/ballot/save': {
+          target: 'http://210.16.166.179:3000',
+          changeOrigin: true,
+        },
+        '/results/final_order': {
+          target: 'http://210.16.166.179:3000',
+          changeOrigin: true,
+        },
+        '/topic/candidate_pool': {
+          target: 'http://210.16.166.179:3000',
+          changeOrigin: true,
+        },
+        '/get_operators_1v1_matrix': {
+          target: 'http://210.16.166.179:3000',
+          changeOrigin: true,
+        },
+
+        // 兼容旧路径的代理配置
+        '/view_final_order': {
+          target: 'http://210.16.166.179:3000',
+          changeOrigin: true,
+        },
+
+        // 兼容旧路径的代理配置
+        '/new_compare': {
+          target: 'http://210.16.166.179:3000',
+          changeOrigin: true,
+        },
+        '/save_score': {
+          target: 'http://210.16.166.179:3000',
+          changeOrigin: true,
+        },
+
+        // 原来的后端代理配置，注释保留以便切换
+        // '/ballot/new': {
+        //   target: 'https://vote.ltsc.vip',
+        //   changeOrigin: true,
+        // },
+        // '/ballot/save': {
+        //   target: 'https://vote.ltsc.vip',
+        //   changeOrigin: true,
+        // },
         // '/new_compare': {
         //   target: 'https://vote.ltsc.vip',
         //   changeOrigin: true,

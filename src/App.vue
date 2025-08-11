@@ -1,7 +1,14 @@
 <script setup lang="ts">
-const route = useRoute()
+import { useOperatorPool } from '@/shared/operator'
 
+const route = useRoute()
 const isHome = computed(() => route.path === '/')
+
+// 初始化候选人池数据
+onMounted(() => {
+  // 应用启动时加载候选人池数据
+  useOperatorPool()
+})
 </script>
 
 <template>

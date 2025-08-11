@@ -119,7 +119,7 @@ function exportData() {
       <slot name="function" />
     </div>
 
-    <div flex-1 my-2 class="bg-white/90 backdrop-blur-sm rounded-lg shadow-md border border-gray-200/60 overflow-hidden">
+    <div flex-1 my-2 class="bg-white/90 backdrop-blur-sm rounded-lg shadow-md border border-gray-200/60 overflow-hidden table-container">
       <table
         w-full
         table-auto
@@ -168,3 +168,30 @@ function exportData() {
     </div>
   </div>
 </template>
+<style>
+/* 表格容器 - 需要相对定位 */
+.table-container {
+  position: relative;
+  overflow: hidden; /* 防止水印溢出 */
+  width: 100%;     /* 根据实际表格宽度调整 */
+}
+
+/* 水印样式 - 使用伪元素覆盖 */
+.table-container::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* 允许点击穿透 */
+  opacity: 0.15;        /* 水印透明度 */
+  
+  /* SVG 水印背景 - 倾斜45度重复 */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Ctext x='0' y='50%25' font-size='20' fill='black' transform='rotate(-45 100 100)' font-family='Arial'%3EArknightsVote%3C/text%3E%3C/svg%3E");
+  
+  background-repeat: repeat;
+  z-index: 100; /* 确保在表格上方 */
+}
+
+</style>

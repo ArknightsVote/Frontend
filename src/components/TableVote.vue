@@ -47,6 +47,12 @@ const cupLabel = computed(() => {
     transform(row: number) {
       return cupLevels[Math.floor(row / count)]
     },
+    style(row: number) {
+    return {
+      backgroundColor: `#${colors.value[row]}`,
+      width: '1rem',
+    }
+  },
   }
 })
 
@@ -134,7 +140,8 @@ watch(nclassesDebounced, (value, oldval) => {
 const showLabels = computed(() => {
   const labels = [orderLabel, ...props.labels]
   if (cupLabel.value) {
-    labels.unshift(colorLabel, cupLabel.value)
+    // labels.unshift(colorLabel, cupLabel.value)
+    labels.unshift(cupLabel.value)
   }
   return labels
 })

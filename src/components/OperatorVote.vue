@@ -5,11 +5,11 @@ const { current: currentVote, voteFor, pushVote, popVote } = useVoteQueue<Operat
 
 // resource
 // -----------------------------------------------------------
-const code = useStorage(STORAGE_KEYS.VOTE_CODE, '000')
+const ballotId = useStorage(STORAGE_KEYS.BALLOT_ID, '')
 
 const compareBody = computed(() => {
   return {
-    code: code.value,
+    ballot_id: ballotId.value,
   }
 })
 
@@ -30,11 +30,12 @@ function skipCurrentVote() {
 }
 
 onFetchResponse(() => {
-  if (!data.value)
+  if (!data.value?.data)
     return
 
-  const opter1 = findOperator(data.value.left)
-  const opter2 = findOperator(data.value.right)
+  const responseData = data.value.data
+  const opter1 = findOperator(responseData.left)
+  const opter2 = findOperator(responseData.right)
 
   if (opter1 && opter2) {
     pushVote([opter1, opter2])
@@ -42,12 +43,13 @@ onFetchResponse(() => {
   else {
     console.error(
       '未找到对应的干员',
-      data.value.left,
-      data.value.right,
+      responseData.left,
+      responseData.right,
     )
   }
 
-  code.value = data.value.code
+  // 更新 ballot_id
+  ballotId.value = responseData.ballot_id
 })
 
 const errorTimes = ref(0)
@@ -82,9 +84,9 @@ function updateLocalVote(winnerName: OperatorName, loserName: OperatorName) {
 
 async function upLoadVote(winnerId: number, loserId: number) {
   return apiSaveScore({
-    code: code.value,
-    win_id: winnerId,
-    lose_id: loserId,
+    ballot_id: ballotId.value,
+    winner: winnerId,
+    loser: loserId,
   })
 }
 
