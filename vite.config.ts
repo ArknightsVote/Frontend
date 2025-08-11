@@ -12,11 +12,11 @@ import { viteMockServe } from 'vite-plugin-mock'
 export default defineConfig((env) => {
   const isDev = env.command === 'serve'
 
-  const stringify = JSON.stringify
+  // const stringify = JSON.stringify
 
   return {
     define: {
-      __DEV__: stringify(isDev),
+      // __DEV__: stringify(isDev),
     },
     plugins: [
       VueRouter({

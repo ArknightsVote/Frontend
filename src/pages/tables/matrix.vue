@@ -85,7 +85,6 @@ const showData = computed(() => {
     />
 
     <div
-      card
       md="flex-1 h-full"
       overflow-auto
       p-0

@@ -20,7 +20,7 @@ const route = useRoute()
     <div w-full px-2 flex="~ items-center justify-between" container>
       <router-link to="/" flex items-center gap-2>
         <img src="/favicon.ico" w-8 aspect-square rounded>
-        <SiteTitle class="text-lg hidden md:block" />
+        <SiteTitle class="hidden md:block" />
       </router-link>
 
       <div

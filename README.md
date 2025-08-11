@@ -1,22 +1,25 @@
 # 明日方舟六星 强度投票箱前端
 
-## 待完成
+## 待测试
 
-- 首页布局
-- 音乐控件
-- 请求是否正确
-  - 若不正确，调整 `src/api` 下的返回值
+- api: `src/api`
 
 ## 展示
 
-<p align="center">
-  <img src="docs/imgs/intro-1.jpg" width="300" style="margin: 10px;" />
-  <img src="docs/imgs/intro-2.jpg" width="300" style="margin: 10px;" />
-  <img src="docs/imgs/intro-3.jpg" width="300" style="margin: 10px;" />
-  <img src="docs/imgs/intro-4.jpg" width="300" style="margin: 10px;" />
+<p >
+  <img src="docs/imgs/1.jpg" width="400" height="250" style="border-radius: 8px; object-fit: cover;" />
+  <!-- 电脑截图 - 大尺寸 -->
+  <p style="display: flex; gap: 20px;">
+    <img src="docs/imgs/2.jpg" width="300" height="200" style="border-radius: 8px; object-fit: cover;" />
+    <img src="docs/imgs/3.jpg" width="300" height="200" style="border-radius: 8px; object-fit: cover;" />
+    <!-- <img src="docs/imgs/4.jpg" width="300" height="200" style="border-radius: 8px; object-fit: cover;" /> -->
+  </p>
 
-  <img src="docs/imgs/intro-home-1.jpg" width="300" style="margin: 10px;" />
-  <img src="docs/imgs/intro-home-2.jpg" width="150" style="margin: 10px;" />
+  <!-- 手机截图 - 小尺寸 -->
+  <p style="display: flex; gap: 20px;">
+    <img src="docs/imgs/5.jpg" width="120" height="250" style="border-radius: 8px; object-fit: cover;" />
+    <img src="docs/imgs/6.jpg" width="120" height="250" style="border-radius: 8px; object-fit: cover;" />
+  </p>
 </p>
 
 ## 使用

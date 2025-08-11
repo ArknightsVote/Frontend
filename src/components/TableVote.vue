@@ -86,7 +86,7 @@ const GVF = ref(0)
 
 function updateClusterData(data: Props['data'], clusterKey: string, nclses?: number) {
   if (!data?.[clusterKey]?.length) {
-    if (__DEV__) {
+    if (import.meta.env.DEV) {
       console.error(
         `簇类分析时聚类的列表出错。`,
         `\nkey  : ${clusterKey}`,
