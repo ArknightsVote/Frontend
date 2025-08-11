@@ -1,3 +1,8 @@
+// 导入音频文件
+import qinghuaciMp3 from '@/assets/audio/qinghuaci.mp3'
+import tongtongMp3 from '@/assets/audio/tongtong.mp3'
+import xiangxianshubenquMp3 from '@/assets/audio/xiangxianshubenqu.mp3'
+import xuelangdahuiMp3 from '@/assets/audio/xuelangdahui.mp3'
 import { defineStore } from 'pinia'
 import { computed, nextTick, ref } from 'vue'
 
@@ -6,22 +11,22 @@ const musicList = [
   {
     id: 1,
     name: '嗵嗵',
-    src: '/src/assets/audio/tongtong.mp3',
+    src: tongtongMp3,
   },
   {
     id: 2,
     name: '血狼打灰歌',
-    src: '/src/assets/audio/xuelangdahui.mp3',
+    src: xuelangdahuiMp3,
   },
   {
     id: 3,
     name: '青花瓷',
-    src: '/src/assets/audio/qinghuaci.mp3',
+    src: qinghuaciMp3,
   },
   {
     id: 4,
     name: '向仙术奔去',
-    src: '/src/assets/audio/xiangxianshubenqu.mp3',
+    src: xiangxianshubenquMp3,
   }
 ]
 
