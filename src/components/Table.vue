@@ -119,7 +119,7 @@ function exportData() {
       <slot name="function" />
     </div>
 
-    <div flex-1 my-2 class="bg-white/90 backdrop-blur-sm rounded-lg shadow-md border border-gray-200/60 overflow-hidden">
+    <div flex-1 my-2 class="bg-white/90 backdrop-blur-sm rounded-lg shadow-md border border-gray-200/60 overflow-hidden table-container">
       <table
         w-full
         table-auto
