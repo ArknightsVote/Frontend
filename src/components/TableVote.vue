@@ -62,18 +62,18 @@ const cupLabel = computed(() => {
 
 const colors = shallowRef<string[]>([])
 
-const colorLabel: Label = {
-  text: '区分度',
-  transform(_row: number) {
-    return ''
-  },
-  style(row: number) {
-    return {
-      backgroundColor: `#${colors.value[row]}`,
-      width: '1rem',
-    }
-  },
-}
+// const colorLabel: Label = {
+//   text: '区分度',
+//   transform(_row: number) {
+//     return ''
+//   },
+//   style(row: number) {
+//     return {
+//       backgroundColor: `#${colors.value[row]}`,
+//       width: '1rem',
+//     }
+//   },
+// }
 
 //
 // cluster list
