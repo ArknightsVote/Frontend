@@ -1,26 +1,19 @@
 # 明日方舟六星 强度投票箱前端
 
-## 待测试
+## 待完成
 
-- api: `src/api`
+主要美化
 
-## 展示
-
-<p >
-  <img src="docs/imgs/1.jpg" width="400" height="250" style="border-radius: 8px; object-fit: cover;" />
-  <!-- 电脑截图 - 大尺寸 -->
-  <p style="display: flex; gap: 20px;">
-    <img src="docs/imgs/2.jpg" width="300" height="200" style="border-radius: 8px; object-fit: cover;" />
-    <img src="docs/imgs/3.jpg" width="300" height="200" style="border-radius: 8px; object-fit: cover;" />
-    <!-- <img src="docs/imgs/4.jpg" width="300" height="200" style="border-radius: 8px; object-fit: cover;" /> -->
-  </p>
-
-  <!-- 手机截图 - 小尺寸 -->
-  <p style="display: flex; gap: 20px;">
-    <img src="docs/imgs/5.jpg" width="120" height="250" style="border-radius: 8px; object-fit: cover;" />
-    <img src="docs/imgs/6.jpg" width="120" height="250" style="border-radius: 8px; object-fit: cover;" />
-  </p>
-</p>
+- 下一组投票图片加载优化
+  - 当前投票结束后，开启一段动效，延迟投票显示
+  - 是否可以后台存储图片
+  - api 是否支持提前获取下一组
+- 数据页
+ - 是否需要 canvas 绘制
+ - 是否需要更改布局
+- 主页交互
+  - 可配置显示内容
+- 主题
 
 ## 使用
 
