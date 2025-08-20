@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { CSSProperties } from 'vue'
-import { exportXLSX } from '@/utils/exportXlsx'
+// import { exportXLSX } from '@/utils/exportXlsx' // 原有Excel导出功能（已注释）
 
 interface KeyLabel {
   text: string
@@ -119,19 +119,225 @@ function exportData() {
   if (!props.exportTable)
     return
 
-  const items: any[][] = []
+  // 原有的Excel导出逻辑（已注释）
+  // const items: any[][] = []
+  // items.push(props.labels.map(label => label.text))
+  // idColItems.value.forEach((_, row) => {
+  //   const item = props.labels.map((label) => {
+  //     return isKeyLabel(label) ? props.data[label.key][row] : label.transform(row)
+  //   })
+  //   items.push(item)
+  // })
+  // const filename = typeof props.exportTable === 'string' ? props.exportTable : 'table.xlsx'
+  // exportXLSX(items, { filename })
 
-  items.push(props.labels.map(label => label.text))
+  // 新的Canvas图片导出逻辑
+  exportTableAsImage()
+}
 
-  idColItems.value.forEach((_, row) => {
-    const item = props.labels.map((label) => {
-      return isKeyLabel(label) ? props.data[label.key][row] : label.transform(row)
-    })
-    items.push(item)
+// Canvas渲染表格图片导出
+function exportTableAsImage() {
+  if (!tableElement.value) return
+
+  const canvas = document.createElement('canvas')
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return
+
+  // 设置字体样式
+  const fontSize = 14
+  const fontFamily = 'Arial, sans-serif'
+  const headerFontSize = 16
+  const cellPadding = 12
+  const borderWidth = 1
+
+  ctx.font = `${fontSize}px ${fontFamily}`
+
+  // 计算每列的最大宽度
+  const colWidths: number[] = []
+  
+  // 计算表头宽度
+  props.labels.forEach((label, col) => {
+    ctx.font = `bold ${headerFontSize}px ${fontFamily}`
+    const headerWidth = ctx.measureText(label.text).width + cellPadding * 2
+    colWidths[col] = headerWidth
   })
 
-  const filename = typeof props.exportTable === 'string' ? props.exportTable : 'table.xlsx'
-  exportXLSX(items, { filename })
+  // 计算数据行宽度
+  ctx.font = `${fontSize}px ${fontFamily}`
+  idColItems.value.forEach((_, row) => {
+    props.labels.forEach((_, col) => {
+      const value = String(getValue(row, col))
+      const textWidth = ctx.measureText(value).width + cellPadding * 2
+      colWidths[col] = Math.max(colWidths[col] || 0, textWidth)
+    })
+  })
+
+  // 计算画布尺寸
+  const totalWidth = colWidths.reduce((sum, width) => sum + width, 0) + borderWidth * (colWidths.length + 1)
+  const headerHeight = headerFontSize + cellPadding * 2
+  const dataRowHeight = fontSize + cellPadding * 2
+  const totalHeight = headerHeight + idColItems.value.length * dataRowHeight + borderWidth * (idColItems.value.length + 2)
+
+  // 设置画布大小
+  canvas.width = totalWidth
+  canvas.height = totalHeight
+
+  // 设置背景色
+  ctx.fillStyle = '#ffffff'
+  ctx.fillRect(0, 0, totalWidth, totalHeight)
+
+  // 绘制水印（密集平铺）
+  ctx.save()
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.08)'
+  ctx.font = '16px Arial'
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+  
+  const watermarkText = 'ArknightsVote'
+  const watermarkSpacing = 150
+  const rows = Math.ceil(totalHeight / watermarkSpacing) + 2
+  const cols = Math.ceil(totalWidth / watermarkSpacing) + 2
+  
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      const x = col * watermarkSpacing - watermarkSpacing / 2
+      const y = row * watermarkSpacing - watermarkSpacing / 2
+      ctx.save()
+      ctx.translate(x, y)
+      ctx.rotate(-Math.PI / 6) // 30度倾斜
+      ctx.fillText(watermarkText, 0, 0)
+      ctx.restore()
+    }
+  }
+  ctx.restore()
+
+  // 绘制边框
+  ctx.strokeStyle = '#d1d5db'
+  ctx.lineWidth = borderWidth
+
+  let currentX = 0
+  let currentY = 0
+
+  // 绘制表头
+  currentX = borderWidth
+  props.labels.forEach((label, col) => {
+    // 绘制表头背景色 - 统一使用默认蓝色背景，不考虑首列特殊处理
+    ctx.fillStyle = '#dbeafe' // 默认蓝色背景
+    ctx.fillRect(currentX, 0, colWidths[col], headerHeight + borderWidth)
+
+    // 设置表头文字样式 - 统一样式
+    ctx.fillStyle = '#1e40af' // 蓝色文字
+    ctx.font = `bold ${headerFontSize}px ${fontFamily}`
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+
+    const centerX = currentX + colWidths[col] / 2
+    const centerY = headerHeight / 2 + borderWidth
+    ctx.fillText(label.text, centerX, centerY)
+
+    // 绘制列分隔线
+    if (col < props.labels.length - 1) {
+      ctx.strokeStyle = '#d1d5db'
+      ctx.beginPath()
+      ctx.moveTo(currentX + colWidths[col], 0)
+      ctx.lineTo(currentX + colWidths[col], headerHeight + borderWidth)
+      ctx.stroke()
+    }
+
+    currentX += colWidths[col]
+  })
+
+  // 绘制表头底部边框
+  ctx.beginPath()
+  ctx.moveTo(0, headerHeight + borderWidth)
+  ctx.lineTo(totalWidth, headerHeight + borderWidth)
+  ctx.stroke()
+
+  // 绘制数据行
+  ctx.font = `${fontSize}px ${fontFamily}`
+
+  idColItems.value.forEach((_, row) => {
+    currentY = headerHeight + borderWidth + (row + 1) * dataRowHeight
+    
+    currentX = borderWidth
+
+    props.labels.forEach((_, col) => {
+      // 获取当前列的样式
+      const label = props.labels[col]
+      const cellStyle = getStyle(label, row)
+      
+      // 绘制单元格背景色
+      let backgroundColor = '#ffffff' // 默认白色背景
+      
+      if (cellStyle?.backgroundColor) {
+        // 如果label中定义了背景色，使用该背景色
+        backgroundColor = cellStyle.backgroundColor as string
+      } else if (col === 0 && props.fixIndex) {
+        // 第一列特殊背景色 (bg-blue-100)
+        backgroundColor = '#dbeafe'
+      } else if (row % 2 === 1) {
+        // 交替行背景色
+        backgroundColor = '#f9fafb'
+      }
+      
+      ctx.fillStyle = backgroundColor
+      ctx.fillRect(currentX, currentY - dataRowHeight, colWidths[col], dataRowHeight)
+
+      // 设置文字颜色 - 移除首列的特殊文字样式
+      if (cellStyle?.backgroundColor) {
+        // 如果有自定义背景色，使用深色文字确保可读性
+        ctx.fillStyle = '#374151' // 深灰色文字
+        ctx.font = `${fontSize}px ${fontFamily}` // 常规字体
+      } else {
+        ctx.fillStyle = '#374151' // 统一使用深灰色文字
+        ctx.font = `${fontSize}px ${fontFamily}` // 统一使用常规字体
+      }
+
+      const value = String(getValue(row, col))
+      const centerX = currentX + colWidths[col] / 2
+      const centerY = currentY - dataRowHeight / 2
+      ctx.textAlign = 'center'
+      ctx.textBaseline = 'middle'
+      ctx.fillText(value, centerX, centerY)
+
+      // 绘制列分隔线
+      if (col < props.labels.length - 1) {
+        ctx.strokeStyle = '#d1d5db'
+        ctx.beginPath()
+        ctx.moveTo(currentX + colWidths[col], currentY - dataRowHeight)
+        ctx.lineTo(currentX + colWidths[col], currentY)
+        ctx.stroke()
+      }
+
+      currentX += colWidths[col]
+    })
+
+    // 绘制行底部边框
+    ctx.strokeStyle = '#d1d5db'
+    ctx.beginPath()
+    ctx.moveTo(0, currentY)
+    ctx.lineTo(totalWidth, currentY)
+    ctx.stroke()
+  })
+
+  // 绘制外边框
+  ctx.strokeStyle = '#d1d5db'
+  ctx.strokeRect(0, 0, totalWidth, totalHeight)
+
+  // 导出图片
+  canvas.toBlob((blob) => {
+    if (!blob) return
+    
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    const filename = typeof props.exportTable === 'string' ? `${props.exportTable}.png` : 'table.png'
+    link.download = filename
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }, 'image/png')
 }
 </script>
 
@@ -153,7 +359,7 @@ function exportData() {
         class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
         @click="exportData"
       >
-        导出
+        导出图片
       </button>
       <slot name="function" />
     </div>
