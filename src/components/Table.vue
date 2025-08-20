@@ -186,31 +186,6 @@ function exportTableAsImage() {
   ctx.fillStyle = '#ffffff'
   ctx.fillRect(0, 0, totalWidth, totalHeight)
 
-  // 绘制水印（密集平铺）
-  ctx.save()
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.08)'
-  ctx.font = '16px Arial'
-  ctx.textAlign = 'center'
-  ctx.textBaseline = 'middle'
-  
-  const watermarkText = 'ArknightsVote'
-  const watermarkSpacing = 150
-  const rows = Math.ceil(totalHeight / watermarkSpacing) + 2
-  const cols = Math.ceil(totalWidth / watermarkSpacing) + 2
-  
-  for (let row = 0; row < rows; row++) {
-    for (let col = 0; col < cols; col++) {
-      const x = col * watermarkSpacing - watermarkSpacing / 2
-      const y = row * watermarkSpacing - watermarkSpacing / 2
-      ctx.save()
-      ctx.translate(x, y)
-      ctx.rotate(-Math.PI / 6) // 30度倾斜
-      ctx.fillText(watermarkText, 0, 0)
-      ctx.restore()
-    }
-  }
-  ctx.restore()
-
   // 绘制边框
   ctx.strokeStyle = '#d1d5db'
   ctx.lineWidth = borderWidth
@@ -323,6 +298,31 @@ function exportTableAsImage() {
   // 绘制外边框
   ctx.strokeStyle = '#d1d5db'
   ctx.strokeRect(0, 0, totalWidth, totalHeight)
+
+  // 绘制水印（密集平铺）- 在所有内容之后绘制
+  ctx.save()
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.15)' // 增加透明度使水印更明显
+  ctx.font = '16px Arial'
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+  
+  const watermarkText = 'ArknightsVote'
+  const watermarkSpacing = 150
+  const rows = Math.ceil(totalHeight / watermarkSpacing) + 2
+  const cols = Math.ceil(totalWidth / watermarkSpacing) + 2
+  
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      const x = col * watermarkSpacing - watermarkSpacing / 2
+      const y = row * watermarkSpacing - watermarkSpacing / 2
+      ctx.save()
+      ctx.translate(x, y)
+      ctx.rotate(-Math.PI / 6) // 30度倾斜
+      ctx.fillText(watermarkText, 0, 0)
+      ctx.restore()
+    }
+  }
+  ctx.restore()
 
   // 导出图片
   canvas.toBlob((blob) => {
