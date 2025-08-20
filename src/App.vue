@@ -32,6 +32,7 @@ onMounted(() => {
         px-2
         relative
         z-1
+        class="main-scroll-container"
       >
         <div container h-full mx-auto>
           <keep-alive>

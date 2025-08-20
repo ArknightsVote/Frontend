@@ -2,18 +2,139 @@
 import { useMusicStore } from '@/stores/music'
 
 const musicStore = useMusicStore()
+const route = useRoute()
+
+// 检测滚动位置，在页面底部时隐藏播放器
+const isAtBottom = ref(false)
+const scrollContainer = ref<HTMLElement | null>(null)
+
+// 检测是否为移动端
+const isMobile = ref(false)
+
+function checkIsMobile() {
+  isMobile.value = window.innerWidth <= 768 // md断点
+}
+
+// 判断是否需要隐藏播放器
+const shouldHide = computed(() => {
+  const isMatrixPage = route.path.includes('/tables/matrix')
+  
+  // 如果是matrix页面且不是手机端，则不隐藏
+  if (isMatrixPage && !isMobile.value) {
+    console.log('Matrix页面 + 非手机端，不隐藏播放器')
+    return false
+  }
+  
+  // 其他情况按正常逻辑处理
+  console.log('应用正常隐藏逻辑:', { isMatrixPage, isMobile: isMobile.value, isAtBottom: isAtBottom.value })
+  return isAtBottom.value
+})
+
+function checkScrollPosition() {
+  if (!scrollContainer.value) {
+    console.log('滚动容器不存在')
+    return
+  }
+  
+  const containerHeight = scrollContainer.value.clientHeight
+  const scrollHeight = scrollContainer.value.scrollHeight
+  const scrollTop = scrollContainer.value.scrollTop
+  
+  console.log('滚动事件触发:', {
+    containerHeight,
+    scrollHeight,
+    scrollTop,
+    canScroll: scrollHeight > containerHeight
+  })
+  
+  // 当滚动到距离底部100px以内时认为是在底部
+  const threshold = 100
+  const newIsAtBottom = (scrollTop + containerHeight + threshold) >= scrollHeight
+  
+  if (newIsAtBottom !== isAtBottom.value) {
+    isAtBottom.value = newIsAtBottom
+    console.log('底部状态变化:', isAtBottom.value)
+  }
+}
+
+function findScrollContainer() {
+  // 直接通过类名查找滚动容器，更精准
+  const element = document.querySelector('.main-scroll-container') as HTMLElement
+  if (element) {
+    // 移除之前的事件监听器（如果存在）
+    if (scrollContainer.value) {
+      scrollContainer.value.removeEventListener('scroll', checkScrollPosition)
+    }
+    
+    scrollContainer.value = element
+    
+    // 添加新的事件监听器
+    scrollContainer.value.addEventListener('scroll', checkScrollPosition, { passive: true })
+    
+    console.log('找到滚动容器:', scrollContainer.value)
+    console.log('容器尺寸:', {
+      clientHeight: element.clientHeight,
+      scrollHeight: element.scrollHeight,
+      canScroll: element.scrollHeight > element.clientHeight
+    })
+    
+    // 立即检查一次位置
+    checkScrollPosition()
+  } else {
+    console.log('未找到滚动容器')
+  }
+}
+
+onMounted(() => {
+  // 初始检测移动端
+  checkIsMobile()
+  
+  // 监听窗口大小变化
+  window.addEventListener('resize', checkIsMobile, { passive: true })
+  
+  // 监听路由变化，重新查找容器
+  watch(() => route.path, () => {
+    // 路由变化后，等待新组件渲染完成
+    nextTick(() => {
+      setTimeout(() => {
+        findScrollContainer()
+      }, 10) // 给更多时间让数据加载
+    })
+  }, { immediate: false })
+  
+  // 定期检查容器是否可用（防止动态内容加载问题）
+  const checkInterval = setInterval(() => {
+    const element = document.querySelector('.main-scroll-container') as HTMLElement
+    if (element && (!scrollContainer.value || scrollContainer.value !== element)) {
+      findScrollContainer()
+    }
+  }, 1000)
+  
+  // 组件卸载时清理定时器
+  onUnmounted(() => {
+    clearInterval(checkInterval)
+    window.removeEventListener('resize', checkIsMobile)
+  })
+})
+
+onUnmounted(() => {
+  if (scrollContainer.value) {
+    scrollContainer.value.removeEventListener('scroll', checkScrollPosition)
+  }
+})
 </script>
 
 <template>
   <!-- 简化的音乐控制条 -->
   <div
     v-if="musicStore.currentTrack"
-    fixed bottom-4 right-4 z-50
+    fixed bottom-4 z-50
     bg="white/90" backdrop-blur-md border border-gray-200
     rounded-lg shadow-lg p-3
     flex items-center gap-3
     max-w-xs
     transition-all duration-300
+    :class="shouldHide ? 'translate-x-full right-0' : 'translate-x-0 right-4'"
   >
     <!-- 歌曲信息 -->
     <div flex-1 min-w-0>
