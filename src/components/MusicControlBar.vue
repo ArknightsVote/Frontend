@@ -21,18 +21,14 @@ const shouldHide = computed(() => {
   
   // 如果是matrix页面且不是手机端，则不隐藏
   if (isMatrixPage && !isMobile.value) {
-    console.log('Matrix页面 + 非手机端，不隐藏播放器')
     return false
   }
   
-  // 其他情况按正常逻辑处理
-  console.log('应用正常隐藏逻辑:', { isMatrixPage, isMobile: isMobile.value, isAtBottom: isAtBottom.value })
   return isAtBottom.value
 })
 
 function checkScrollPosition() {
   if (!scrollContainer.value) {
-    console.log('滚动容器不存在')
     return
   }
   
@@ -40,20 +36,12 @@ function checkScrollPosition() {
   const scrollHeight = scrollContainer.value.scrollHeight
   const scrollTop = scrollContainer.value.scrollTop
   
-  console.log('滚动事件触发:', {
-    containerHeight,
-    scrollHeight,
-    scrollTop,
-    canScroll: scrollHeight > containerHeight
-  })
-  
   // 当滚动到距离底部100px以内时认为是在底部
   const threshold = 100
   const newIsAtBottom = (scrollTop + containerHeight + threshold) >= scrollHeight
   
   if (newIsAtBottom !== isAtBottom.value) {
     isAtBottom.value = newIsAtBottom
-    console.log('底部状态变化:', isAtBottom.value)
   }
 }
 
@@ -70,13 +58,6 @@ function findScrollContainer() {
     
     // 添加新的事件监听器
     scrollContainer.value.addEventListener('scroll', checkScrollPosition, { passive: true })
-    
-    console.log('找到滚动容器:', scrollContainer.value)
-    console.log('容器尺寸:', {
-      clientHeight: element.clientHeight,
-      scrollHeight: element.scrollHeight,
-      canScroll: element.scrollHeight > element.clientHeight
-    })
     
     // 立即检查一次位置
     checkScrollPosition()

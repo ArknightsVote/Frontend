@@ -43,6 +43,45 @@ export interface TableProps {
 
 const props = defineProps<TableProps>()
 
+// 用于检测是否需要横向滚动的 ref
+const scrollContainer = ref<HTMLElement>()
+const tableElement = ref<HTMLElement>()
+const needsHorizontalScroll = ref(false)
+
+// 检测是否需要横向滚动
+const checkNeedsScroll = () => {
+  if (scrollContainer.value && tableElement.value) {
+    const containerWidth = scrollContainer.value.clientWidth
+    const tableWidth = tableElement.value.scrollWidth
+    needsHorizontalScroll.value = tableWidth > containerWidth
+  }
+}
+
+// 监听窗口大小变化
+const resizeObserver = new ResizeObserver(() => {
+  checkNeedsScroll()
+})
+
+onMounted(() => {
+  nextTick(() => {
+    checkNeedsScroll()
+    if (scrollContainer.value) {
+      resizeObserver.observe(scrollContainer.value)
+    }
+  })
+})
+
+onUnmounted(() => {
+  resizeObserver.disconnect()
+})
+
+// 监听数据变化，重新检测
+watch(() => [props.labels, props.data], () => {
+  nextTick(() => {
+    checkNeedsScroll()
+  })
+}, { deep: true })
+
 // 唯一标识列
 const idColItems = computed(() => {
   const colKeys = Object.keys(props.data)
@@ -120,51 +159,64 @@ function exportData() {
     </div>
 
     <div flex-1 my-2 class="bg-white/90 backdrop-blur-sm rounded-lg shadow-md border border-gray-200/60 overflow-hidden table-container">
-      <table
-        w-full
-        table-auto
-        border-collapse
-        text="center"
+      <!-- 移动端横向滑动提示 - 只在需要滚动时显示 -->
+      <div 
+        v-if="needsHorizontalScroll" 
+        class="md:hidden bg-blue-50 border-b border-blue-200 px-4 py-2 text-center text-sm text-blue-600 font-medium"
       >
-        <caption v-if="$slots.caption" caption-top px-2 py-2>
-          <slot name="caption" />
-        </caption>
-        <thead sticky top-0>
-          <tr class="bg-blue-100 text-blue-800 font-semibold">
-            <th
-              v-for="label in labels"
-              :key="label.text"
-              break-keep
-              whitespace-nowrap
-              class="px-4 py-3"
-            >
-              {{ label.text }}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <slot name="tbody" :get-value="getValue" :id-col-items="idColItems">
-            <tr
-              v-for="(k, row) in idColItems"
-              :key="idkey ? k : row"
-              class="hover:bg-blue-50/60 transition-colors duration-200"
-              :class="row % 2 === 0 ? 'bg-white/60' : 'bg-gray-50/60'"
-            >
-              <td
-                v-for="(label, col) in labels"
+        📱 左右滑动查看更多内容
+      </div>
+      
+      <!-- 横向滚动容器 -->
+      <div ref="scrollContainer" class="overflow-x-auto">
+        <table
+          ref="tableElement"
+          w-full
+          table-auto
+          border-collapse
+          text="center"
+          class="min-w-full"
+        >
+          <caption v-if="$slots.caption" caption-top px-2 py-2>
+            <slot name="caption" />
+          </caption>
+          <thead sticky top-0>
+            <tr class="bg-blue-100 text-blue-800 font-semibold">
+              <th
+                v-for="label in labels"
                 :key="label.text"
                 break-keep
                 whitespace-nowrap
-                :style="getStyle(label, row)"
-                class="px-4 py-3 text-gray-700 font-medium"
-                :class="fixIndex ? 'first:sticky first:left-0 z-1 first:bg-blue-100 first:text-blue-800 first:font-semibold' : ''"
+                class="px-4 py-3"
               >
-                {{ getValue(row, col) }}
-              </td>
+                {{ label.text }}
+              </th>
             </tr>
-          </slot>
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            <slot name="tbody" :get-value="getValue" :id-col-items="idColItems">
+              <tr
+                v-for="(k, row) in idColItems"
+                :key="idkey ? k : row"
+                class="hover:bg-blue-50/60 transition-colors duration-200"
+                :class="row % 2 === 0 ? 'bg-white/60' : 'bg-gray-50/60'"
+              >
+                <td
+                  v-for="(label, col) in labels"
+                  :key="label.text"
+                  break-keep
+                  whitespace-nowrap
+                  :style="getStyle(label, row)"
+                  class="px-4 py-3 text-gray-700 font-medium"
+                  :class="fixIndex ? 'first:sticky first:left-0 z-1 first:bg-blue-100 first:text-blue-800 first:font-semibold' : ''"
+                >
+                  {{ getValue(row, col) }}
+                </td>
+              </tr>
+            </slot>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>
@@ -174,6 +226,32 @@ function exportData() {
   position: relative;
   overflow: hidden; /* 防止水印溢出 */
   width: 100%;     /* 根据实际表格宽度调整 */
+}
+
+/* 横向滚动容器 */
+.table-container .overflow-x-auto {
+  /* 自定义滚动条样式 */
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f1f5f9;
+}
+
+/* Webkit 浏览器滚动条样式 */
+.table-container .overflow-x-auto::-webkit-scrollbar {
+  height: 8px;
+}
+
+.table-container .overflow-x-auto::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.table-container .overflow-x-auto::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.table-container .overflow-x-auto::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 /* 水印样式 - 使用伪元素覆盖 */
@@ -194,4 +272,15 @@ function exportData() {
   z-index: 100; /* 确保在表格上方 */
 }
 
+/* 移动端提示样式 */
+@media (max-width: 768px) {
+  .table-container .overflow-x-auto {
+    /* 在移动端增强滚动条可见性 */
+    scrollbar-width: auto;
+  }
+  
+  .table-container .overflow-x-auto::-webkit-scrollbar {
+    height: 12px;
+  }
+}
 </style>
