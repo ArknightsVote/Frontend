@@ -88,7 +88,10 @@ export interface GetOperators1v1MatrixRequest {
 
 export interface GetOperators1v1MatrixResponse {
   data: {
-    [key: string]: number
+    [key: string]: {
+      score: number
+      count: number
+    }
   }
   message: string
   status: number

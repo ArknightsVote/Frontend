@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { STORAGE_KEYS } from '@/constants/storage'
+
 const labels = [
   { text: '干员代号', key: 'name' },
   { text: '胜率', key: 'rate' },
@@ -37,6 +39,9 @@ onActivated(() => {
 })
 
 const title = '明日方舟六星强度个人数据'
+
+// 获取前端记录的总投票数
+const totalVotes = useStorage(STORAGE_KEYS.VOTE_TIMES, 0)
 </script>
 
 <template>
@@ -50,9 +55,14 @@ const title = '明日方舟六星强度个人数据'
       cluster-key="rate"
     >
       <template #caption>
-        <h2>
-          {{ title }}
-        </h2>
+        <div>
+          <h2>
+            {{ title }}
+          </h2>
+          <p class="text-sm text-gray-600 mt-2">
+            总投票数：{{ totalVotes.toLocaleString() }} 票
+          </p>
+        </div>
       </template>
     </TableVote>
     <div v-else size-full text-center pt-8>

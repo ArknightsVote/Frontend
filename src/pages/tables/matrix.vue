@@ -33,36 +33,45 @@ const showData = computed(() => {
   }
 
   if (!data.value?.data) {
+    selectedList.value.forEach(({ name }) => {
+      displayData[name] = selectedList.value.map(() => '0 (0次)')
+    })
     return displayData
   }
 
   const matrixData = data.value.data
   const selected = selectedList.value
   
-  selected.forEach(({ name }) => {
-    displayData[name] = selected.map(({ name: rowName }) => {
+  selected.forEach(({ name: colName }) => {
+    displayData[colName] = selected.map(({ name: rowName }) => {
       // 根据干员名称获取真实的干员ID
       const rowOperator = getOperator(rowName)
-      const colOperator = getOperator(name)
+      const colOperator = getOperator(colName)
       
       if (!rowOperator || !colOperator) {
-        return 0
+        return '0 (0次)'
       }
       
-      const rowOperatorId = rowOperator.id
-      const colOperatorId = colOperator.id
+      const key1 = `${rowOperator.id}:${colOperator.id}`
+      const key2 = `${colOperator.id}:${rowOperator.id}`
       
-      // 尝试两种可能的键名组合
-      const key1 = `${rowOperatorId}:${colOperatorId}`
-      const key2 = `${colOperatorId}:${rowOperatorId}`
+      let scoreData = matrixData[key1]
+      let isReversed = false
       
-      let value = matrixData[key1]
-      if (value === undefined) {
-        // 如果第一种组合不存在，尝试第二种组合并取负值
-        value = matrixData[key2] ? -matrixData[key2] : 0
+      if (!scoreData) {
+        scoreData = matrixData[key2]
+        isReversed = true
       }
       
-      return value / 100
+      if (!scoreData) {
+        return '0 (0次)'
+      }
+      
+      const score = isReversed ? -scoreData.score : scoreData.score
+      const count = scoreData.count
+      const displayScore = score / 100
+      
+      return `${displayScore} (${count}次)`
     })
   })
 
