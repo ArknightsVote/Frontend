@@ -48,14 +48,14 @@ const scrollContainer = ref<HTMLElement>()
 const tableElement = ref<HTMLElement>()
 const needsHorizontalScroll = ref(false)
 
-// 检测是否需要横向滚动
-const checkNeedsScroll = () => {
+// 检测是否需要横向滚动 - 添加节流
+const checkNeedsScroll = useDebounceFn(() => {
   if (scrollContainer.value && tableElement.value) {
     const containerWidth = scrollContainer.value.clientWidth
     const tableWidth = tableElement.value.scrollWidth
     needsHorizontalScroll.value = tableWidth > containerWidth
   }
-}
+}, 100) // 100ms 防抖
 
 // 监听窗口大小变化
 const resizeObserver = new ResizeObserver(() => {
@@ -75,12 +75,12 @@ onUnmounted(() => {
   resizeObserver.disconnect()
 })
 
-// 监听数据变化，重新检测
-watch(() => [props.labels, props.data], () => {
+// 优化数据变化监听 - 移除深度监听，只监听数据长度变化
+watch(() => [props.labels.length, Object.keys(props.data).length], () => {
   nextTick(() => {
     checkNeedsScroll()
   })
-}, { deep: true })
+}, { flush: 'post' }) // 使用 post 刷新时机，减少重复执行
 
 // 唯一标识列
 const idColItems = computed(() => {
@@ -143,12 +143,22 @@ function exportTableAsImage() {
   const ctx = canvas.getContext('2d')
   if (!ctx) return
 
-  // 设置字体样式
-  const fontSize = 14
+  // 设置高DPI支持
+  const dpi = window.devicePixelRatio || 1
+  const scaleFactor = 2 // 额外的缩放倍数，提高清晰度
+
+  // 设置字体样式（基础尺寸）
+  const baseFontSize = 14
+  const baseHeaderFontSize = 16
+  const baseCellPadding = 12
+  const baseBorderWidth = 1
+
+  // 根据缩放因子调整尺寸
+  const fontSize = baseFontSize * scaleFactor
+  const headerFontSize = baseHeaderFontSize * scaleFactor
+  const cellPadding = baseCellPadding * scaleFactor
+  const borderWidth = baseBorderWidth * scaleFactor
   const fontFamily = 'Arial, sans-serif'
-  const headerFontSize = 16
-  const cellPadding = 12
-  const borderWidth = 1
 
   ctx.font = `${fontSize}px ${fontFamily}`
 
@@ -178,9 +188,16 @@ function exportTableAsImage() {
   const dataRowHeight = fontSize + cellPadding * 2
   const totalHeight = headerHeight + idColItems.value.length * dataRowHeight + borderWidth * (idColItems.value.length + 2)
 
-  // 设置画布大小
-  canvas.width = totalWidth
-  canvas.height = totalHeight
+  // 设置画布大小（高DPI）
+  canvas.width = totalWidth * dpi
+  canvas.height = totalHeight * dpi
+  
+  // 设置CSS尺寸（显示尺寸）
+  canvas.style.width = totalWidth + 'px'
+  canvas.style.height = totalHeight + 'px'
+  
+  // 缩放画布内容以适应高DPI
+  ctx.scale(dpi, dpi)
 
   // 设置背景色
   ctx.fillStyle = '#ffffff'
@@ -302,12 +319,12 @@ function exportTableAsImage() {
   // 绘制水印（密集平铺）- 在所有内容之后绘制
   ctx.save()
   ctx.fillStyle = 'rgba(0, 0, 0, 0.15)' // 增加透明度使水印更明显
-  ctx.font = '16px Arial'
+  ctx.font = `${16 * scaleFactor}px Arial`
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
   
   const watermarkText = 'ArknightsVote'
-  const watermarkSpacing = 150
+  const watermarkSpacing = 150 * scaleFactor
   const rows = Math.ceil(totalHeight / watermarkSpacing) + 2
   const cols = Math.ceil(totalWidth / watermarkSpacing) + 2
   

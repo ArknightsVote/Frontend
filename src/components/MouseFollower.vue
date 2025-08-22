@@ -36,7 +36,7 @@ watch([x, y], update)
     position: fixed;
     z-index: 9999;
     vertical-align: middle;
-    transition: left .15s ease, top .15s ease;
+    transition: left .1s ease, top .1s ease;
     user-select: none;
     pointer-events: none;
 

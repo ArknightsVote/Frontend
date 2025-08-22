@@ -87,6 +87,10 @@ async function upLoadVote(winnerId: number, loserId: number) {
 // vote
 // -----------------------------------------------------------
 
+// 投票提示相关状态
+const lastVotedOperator = ref<string>('')
+const showVoteNotification = ref(false)
+
 async function voteForWinner(winnerIndex: number) {
   if (!currentVote.value)
     return
@@ -95,6 +99,15 @@ async function voteForWinner(winnerIndex: number) {
   const opter2 = currentVote.value[1]
 
   const [winner, loser] = winnerIndex === 0 ? [opter1, opter2] : [opter2, opter1]
+
+  // 设置投票提示
+  lastVotedOperator.value = winner.name
+  showVoteNotification.value = true
+
+  // 3秒后隐藏提示
+  setTimeout(() => {
+    showVoteNotification.value = false
+  }, 3000)
 
   // FIXME: 暂忽略是否上传成功
   upLoadVote(winner.id, loser.id).finally(async () => {
@@ -143,6 +156,25 @@ async function voteForWinner(winnerIndex: number) {
         class="cursor-pointer transform transition-transform duration-200 touch-manipulation"
         @click="voteForWinner(1)"
       />
+    </div>
+
+    <!-- 投票提示文字 -->
+    <div class="flex justify-center mt-4 h-8">
+      <Transition
+        enter-active-class="transition-opacity duration-500 ease-out"
+        enter-from-class="opacity-0"
+        enter-to-class="opacity-100"
+        leave-active-class="transition-opacity duration-1000 ease-in"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
+      >
+        <p
+          v-if="showVoteNotification"
+          class="text-lg font-bold text-red-600"
+        >
+          你刚才投给了 {{ lastVotedOperator }}
+        </p>
+      </Transition>
     </div>
   </div>
 </template>

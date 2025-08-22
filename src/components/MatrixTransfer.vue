@@ -9,7 +9,8 @@ interface ListItem {
 function getInitListItems() {
   const list: ListItem[] = []
   getOperators().forEach(v => list.push({ name: v.name, index: v.index }))
-  return list
+  // 按照干员名字排序
+  return list.sort((a, b) => a.name.localeCompare(b.name))
 }
 
 const originList = getInitListItems()
