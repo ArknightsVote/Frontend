@@ -21,13 +21,14 @@ onMounted(() => {
   <!-- 音乐控制条（非首页显示） -->
   <MusicControlBar v-if="!isHome" />
 
-  <Nav v-if="!isHome" />
+  <!-- 导航栏（所有页面都显示） -->
+  <Nav />
 
   <router-view v-slot="{ Component }">
     <transition name="slide" mode="out-in">
       <div
         :key="route.path"
-        :style="{ height: isHome ? '100%' : 'calc(100% - 3.5rem)' }"
+        :style="{ height: 'calc(100% - 3.5rem)' }"
         overflow-y-auto
         px-2
         relative

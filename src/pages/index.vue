@@ -1,9 +1,5 @@
 <script setup lang="ts">
-const navItems = [
-  { text: '总数据', to: '/tables' },
-  { text: '个人数据', to: '/tables/individual' },
-  { text: '1v1 矩阵', to: '/tables/matrix' },
-]
+const { isVotingOpen, topicInfo, votingPeriod } = useTopicInfo()
 
 // 使用模板引用
 const firstPageRef = ref<HTMLElement>()
@@ -61,7 +57,7 @@ function handleClick() {
     <!-- 投票区域 - 第一页 -->
     <div
       ref="firstPageRef"
-      class="min-h-screen page flex flex-col justify-center items-center p-4 sm:p-6 lg:p-8 relative"
+      class="min-h-screen page flex flex-col justify-center items-center p-4 sm:p-6 lg:p-8 relative pt-20"
     >
       <div class="w-full max-w-5xl mx-auto">
         <!-- 标题区域 -->
@@ -72,9 +68,28 @@ function handleClick() {
           />
         </div>
 
-        <!-- 投票区域 - 直接显示，无卡片包装 -->
+        <!-- 投票区域 - 根据投票开放状态显示不同内容 -->
         <div class="mb-8">
-          <OperatorVote />
+          <!-- 投票已开放时显示投票组件 -->
+          <OperatorVote v-if="isVotingOpen" />
+          
+          <!-- 投票未开放时显示提示信息 -->
+          <div v-else class="text-center py-12 px-6">
+            <div class="max-w-md mx-auto">
+              <h2 class="text-2xl font-bold text-gray-700 mb-4">
+                投票尚未开放
+              </h2>
+              <p class="text-gray-600 mb-6 leading-relaxed">
+                {{ topicInfo?.title || '投票活动' }}的投票功能暂时未开放
+              </p>
+              <div v-if="votingPeriod" class="bg-blue-50 p-4 rounded-lg mb-6">
+                <p class="text-sm text-blue-700">
+                  <span class="font-medium">投票时间：</span>
+                  <br>{{ votingPeriod }}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -120,25 +135,6 @@ function handleClick() {
           <SectionThanks />
         </div>
       </div>
-    </div>
-
-    <!-- 固定导航 - 左下角数据导航 -->
-    <div
-      class="fixed bottom-6 left-4 flex flex-col gap-2 z-20"
-      sm="bottom-8 left-6 gap-3"
-      lg="bottom-12 left-8 "
-      xl="left-12 "
-    >
-      <router-link
-        v-for="item in navItems"
-        :key="item.to"
-        :to="item.to"
-        class="px-3 py-2 bg-white/70 hover:bg-white/90 active:bg-white text-gray-700 hover:text-gray-900 border border-gray-300/50 rounded-md shadow-sm hover:shadow-md active:shadow-inner transition-all duration-200 text-xs font-medium touch-manipulation backdrop-blur-sm"
-        sm="px-4 py-2.5 text-sm"
-        lg="px-6 py-3 text-base"
-      >
-        {{ item.text }}
-      </router-link>
     </div>
 
     <!-- 固定导航 - 右下角页面切换 -->

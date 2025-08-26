@@ -46,9 +46,21 @@ export function useTopicInfo() {
     return now >= openTime && now <= closeTime
   })
 
+  // 判断投票是否已开放（已到开始时间）
+  const isVotingOpen = computed(() => {
+    if (!topicInfo.value)
+      return false
+
+    const now = new Date()
+    const openTime = new Date(topicInfo.value.open_time)
+
+    return now >= openTime
+  })
+
   return {
     topicInfo,
     votingPeriod,
     isVotingActive,
+    isVotingOpen,
   }
 }
