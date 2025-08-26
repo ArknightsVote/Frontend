@@ -15,7 +15,7 @@ const nav = computed(() => {
   
   // 如果投票还未开放，只显示总数据相关的导航项，隐藏投票页面
   if (!isVotingOpen.value) {
-    return allNav.filter(item => item.to !== '/')
+    return []
   }
   
   return allNav
