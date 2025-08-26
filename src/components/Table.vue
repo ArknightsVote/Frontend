@@ -381,7 +381,7 @@ function exportTableAsImage() {
       <slot name="function" />
     </div>
 
-    <div flex-1 my-2 class="bg-white/90 backdrop-blur-sm rounded-lg shadow-md border border-gray-200/60 overflow-hidden table-container">
+    <div flex-1 my-2 class="rounded-lg shadow-md border border-gray-200/60 overflow-hidden table-container">
       <!-- 移动端横向滑动提示 - 只在需要滚动时显示 -->
       <div 
         v-if="needsHorizontalScroll" 
