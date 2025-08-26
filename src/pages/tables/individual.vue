@@ -55,7 +55,7 @@ const totalVotes = useStorage(STORAGE_KEYS.VOTE_TIMES, 0)
       cluster-key="rate"
     >
       <template #caption>
-        <div>
+        <div class="bg-white/60 px-4 py-3 rounded-lg -mx-2 -my-2">
           <h2>
             {{ title }}
           </h2>
