@@ -62,9 +62,6 @@ const totalVotes = useStorage(STORAGE_KEYS.VOTE_TIMES, 0)
           <p class="text-sm text-gray-600 mt-2">
             总投票数：{{ totalVotes.toLocaleString() }} 票
           </p>
-          <p class="text-xs text-gray-500 mt-1 italic">
-            排序优先级为胜率，得分，获胜次数
-          </p>
         </div>
       </template>
     </TableVote>
