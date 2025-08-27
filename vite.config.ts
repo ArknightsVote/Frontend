@@ -83,23 +83,23 @@ export default defineConfig((env) => {
       proxy: {
         // 新的后端代理配置
         '/ballot/new': {
-          target: 'http://api.vote.ltsc.vip',
+          target: 'https://api.vote.ltsc.vip',
           changeOrigin: true,
         },
         '/ballot/save': {
-          target: 'http://api.vote.ltsc.vip',
+          target: 'https://api.vote.ltsc.vip',
           changeOrigin: true,
         },
         '/results/final_order': {
-          target: 'http://api.vote.ltsc.vip',
+          target: 'https://api.vote.ltsc.vip',
           changeOrigin: true,
         },
         '/topic/candidate_pool': {
-          target: 'http://api.vote.ltsc.vip',
+          target: 'https://api.vote.ltsc.vip',
           changeOrigin: true,
         },
         '/get_operators_1v1_matrix': {
-          target: 'http://api.vote.ltsc.vip',
+          target: 'https://api.vote.ltsc.vip',
           changeOrigin: true,
         },
       },
