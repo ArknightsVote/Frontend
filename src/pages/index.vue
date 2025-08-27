@@ -125,7 +125,7 @@ function handleClick() {
                       <div class="absolute -bottom-2 right-4 w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-green-100"></div>
                     </div>
                     <!-- 小人物图标 -->
-                    <div class="text-2xl mt-2 text-green-600 text-right">😏</div>
+                    <div class="text-2xl mt-2 text-green-600">😏</div>
                   </div>
                 </div>
                 
