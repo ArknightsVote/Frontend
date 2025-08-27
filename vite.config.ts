@@ -83,23 +83,23 @@ export default defineConfig((env) => {
       proxy: {
         // 新的后端代理配置
         '/ballot/new': {
-          target: 'http://210.16.166.188:3000',
+          target: 'http://api.vote.ltsc.vip',
           changeOrigin: true,
         },
         '/ballot/save': {
-          target: 'http://210.16.166.188:3000',
+          target: 'http://api.vote.ltsc.vip',
           changeOrigin: true,
         },
         '/results/final_order': {
-          target: 'http://210.16.166.188:3000',
+          target: 'http://api.vote.ltsc.vip',
           changeOrigin: true,
         },
         '/topic/candidate_pool': {
-          target: 'http://210.16.166.188:3000',
+          target: 'http://api.vote.ltsc.vip',
           changeOrigin: true,
         },
         '/get_operators_1v1_matrix': {
-          target: 'http://210.16.166.188:3000',
+          target: 'http://api.vote.ltsc.vip',
           changeOrigin: true,
         },
       },

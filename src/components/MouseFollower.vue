@@ -26,7 +26,7 @@ watch([x, y], update)
 <template>
   <img
     class="mouse-follower"
-    src="../assets/images/夕trans.gif"
+    src="https://ae01.alicdn.com/kf/A21127b2b39f44879b889589c9afc8feb6.gif"
     :style="style"
   >
 </template>

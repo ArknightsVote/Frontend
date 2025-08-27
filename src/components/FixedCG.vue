@@ -1,5 +1,5 @@
 <script setup lang='ts'>
-import imgURL from '@/assets/images/keobeCG.png'
+const imgURL = 'https://ae01.alicdn.com/kf/A32905af28006419081a46bda3baff41cR.png'
 </script>
 
 <template>

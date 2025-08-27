@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { isVotingOpen, topicInfo, votingPeriod } = useTopicInfo()
+const { isVotingOpen, topicInfo } = useTopicInfo()
 
 // 使用模板引用
 const firstPageRef = ref<HTMLElement>()
@@ -77,17 +77,8 @@ function handleClick() {
           <div v-else class="text-center py-12 px-6">
             <div class="max-w-md mx-auto">
               <h2 class="text-2xl font-bold text-gray-700 mb-4">
-                投票尚未开放
+                {{ topicInfo?.title || '投票活动' }} 投票尚未开放
               </h2>
-              <p class="text-gray-600 mb-6 leading-relaxed">
-                {{ topicInfo?.title || '投票活动' }}的投票功能暂时未开放
-              </p>
-              <div v-if="votingPeriod" class="bg-blue-50 p-4 rounded-lg mb-6">
-                <p class="text-sm text-blue-700">
-                  <span class="font-medium">投票时间：</span>
-                  <br>{{ votingPeriod }}
-                </p>
-              </div>
             </div>
           </div>
         </div>

@@ -165,7 +165,7 @@ function setVolume(event: Event) {
 <style scoped>
 /* 背景图片样式 */
 .music-bg {
-  background-image: url('/src/assets/images/xuelang.png');
+  background-image: url('https://ae01.alicdn.com/kf/Aadeca91ae5b64becaa246159de36568bE.png');
 }
 
 /* Range slider 自定义样式 */

@@ -47,7 +47,7 @@ onMounted(() => {
 
 <style>
 body {
-    background: url('@/assets/images/bg.png') center no-repeat;
+    background: url('https://ae01.alicdn.com/kf/A12a6acef3d954aaabb58bb289be8ebd8C.png') center no-repeat;
     background-size: cover;
     background-attachment: fixed;
     min-height: 100vh;
