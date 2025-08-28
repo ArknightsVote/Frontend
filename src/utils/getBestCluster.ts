@@ -58,18 +58,22 @@ export function getBestCluster(data_array: any) {
   const SDAM = serie.variance() // the Sum of squared Deviations from the Array Mean
 
   let cluster_list
-  let nclasses = 2 // 聚类簇数
+  let nclasses = 1 // 聚类簇数
   let GVF // The Goodness of Variance Fit 方差拟合优度
   do {
-    cluster_list = getClusterList(serie.serie, serie.getClassJenks2(nclasses++))
+    cluster_list = getClusterList(serie.serie, serie.getClassJenks2(++nclasses))
     GVF = 1 - getSDCM(cluster_list) / SDAM
   } while (GVF < 0.8)
+
+  if (cluster_list.length === nclasses + 1) {
+    cluster_list.splice(0, 2, cluster_list[0].concat(cluster_list[1]));
+  }
 
   return {
     data: cluster_list,
     colors: getColors(cluster_list.reverse()),
     GVF,
-    nclasses: nclasses - 1,
+    nclasses: nclasses,
   }
 }
 
@@ -77,6 +81,10 @@ export function getNClassesCluster(clusterList: any, nclasses: number) {
   const serie = new Geostats(clusterList)
   const cluster_list = getClusterList(serie.serie, serie.getClassJenks2(nclasses))
   const GVF = 1 - getSDCM(cluster_list) / serie.variance()
+
+  if (cluster_list.length === nclasses + 1) {
+    cluster_list.splice(0, 2, cluster_list[0].concat(cluster_list[1]));
+  }
 
   return {
     data: cluster_list,
