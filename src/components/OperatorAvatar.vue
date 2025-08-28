@@ -3,7 +3,22 @@ const { target } = defineProps<{
   target?: OperatorTarget
 }>()
 
-const operator = computed(() => target ? findOperator(target) : undefined)
+// 使用 ref 来存储异步获取的干员数据
+const operator = ref<Operator | undefined>()
+
+// 监听 target 变化，异步获取干员数据
+watchEffect(async () => {
+  if (target) {
+    try {
+      operator.value = await findOperator(target)
+    } catch (error) {
+      console.warn('Failed to find operator:', error)
+      operator.value = undefined
+    }
+  } else {
+    operator.value = undefined
+  }
+})
 </script>
 
 <template>

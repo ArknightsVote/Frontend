@@ -23,13 +23,13 @@ function skipCurrentVote() {
   loadVote()
 }
 
-onFetchResponse(() => {
+onFetchResponse(async () => {
   if (!data.value?.data)
     return
 
   const responseData = data.value.data
-  const opter1 = findOperator(responseData.left)
-  const opter2 = findOperator(responseData.right)
+  const opter1 = await findOperator(responseData.left)
+  const opter2 = await findOperator(responseData.right)
 
   if (opter1 && opter2) {
     pushVote([opter1, opter2])

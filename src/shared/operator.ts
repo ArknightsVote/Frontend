@@ -153,9 +153,12 @@ export const getOperator = findOperator
 /**
  * 根据 name 或 id 获取干员
  */
-export function findOperator(target: string | number): Operator | undefined {
-  if (!operatorPoolData.value)
-    return undefined
+export async function findOperator(target: string | number): Promise<Operator | undefined> {
+  if (!operatorPoolData.value) {
+    await useOperatorPool()
+    if (!operatorPoolData.value)
+      return undefined
+  }
 
   const name = ensureOperatorName(target)
   return name ? operatorPoolData.value.get(name) : undefined
