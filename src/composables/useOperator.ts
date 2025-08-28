@@ -22,14 +22,39 @@ export function useOperator(target?: string | number) {
 
   const operator = reactive<Partial<Operator>>({})
 
-  function update(name?: string) {
-    const data = name ? getOperator(name) || {} : {} as Partial<Operator>
-    operator.name = data.name
-    operator.id = data.id
-    operator.avatar = data.avatar
+  async function update(name?: string) {
+    if (name) {
+      try {
+        const data = await getOperator(name)
+        if (data) {
+          operator.name = data.name
+          operator.id = data.id
+          operator.avatar = data.avatar
+        }
+        else {
+          // 清空数据
+          operator.name = undefined
+          operator.id = undefined
+          operator.avatar = undefined
+        }
+      }
+      catch (error) {
+        console.warn('Failed to get operator:', error)
+        // 清空数据
+        operator.name = undefined
+        operator.id = undefined
+        operator.avatar = undefined
+      }
+    }
+    else {
+      // 清空数据
+      operator.name = undefined
+      operator.id = undefined
+      operator.avatar = undefined
+    }
   }
 
-  watch(nameRef, update)
+  watch(nameRef, update, { immediate: true })
 
   return {
     update: (target?: number | string) => (nameRef.value = ensureOperatorName(target)),

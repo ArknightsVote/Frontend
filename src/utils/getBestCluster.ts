@@ -69,7 +69,7 @@ export function getBestCluster(data_array: any) {
     data: cluster_list,
     colors: getColors(cluster_list.reverse()),
     GVF,
-    nclasses - 1,
+    nclasses: nclasses - 1,
   }
 }
 

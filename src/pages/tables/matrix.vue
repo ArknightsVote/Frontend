@@ -27,7 +27,10 @@ const labels = computed(() => {
   ]
 })
 
-const showData = computed(() => {
+const showData = ref<Record<string, (number | string)[]>>({})
+
+// 使用 watchEffect 来处理异步计算
+watchEffect(async () => {
   const displayData: Record<string, (number | string)[]> = {
     names: selectedList.value.map(el => el.name),
   }
@@ -36,17 +39,19 @@ const showData = computed(() => {
     selectedList.value.forEach(({ name }) => {
       displayData[name] = selectedList.value.map(() => '0 (0次)')
     })
-    return displayData
+    showData.value = displayData
+    return
   }
 
   const matrixData = data.value.data
   const selected = selectedList.value
-  
-  selected.forEach(({ name: colName }) => {
-    displayData[colName] = selected.map(({ name: rowName }) => {
+
+  // 并行处理所有列
+  await Promise.all(selected.map(async ({ name: colName }) => {
+    displayData[colName] = await Promise.all(selected.map(async ({ name: rowName }) => {
       // 根据干员名称获取真实的干员ID
-      const rowOperator = getOperator(rowName)
-      const colOperator = getOperator(colName)
+      const rowOperator = await getOperator(rowName)
+      const colOperator = await getOperator(colName)
       
       if (!rowOperator || !colOperator) {
         return '0 (0次)'
@@ -54,7 +59,6 @@ const showData = computed(() => {
       
       const key1 = `${rowOperator.id}:${colOperator.id}`
       const key2 = `${colOperator.id}:${rowOperator.id}`
-      
       let scoreData = matrixData[key1]
       let isReversed = false
       
@@ -66,16 +70,16 @@ const showData = computed(() => {
       if (!scoreData) {
         return '0 (0次)'
       }
-      
+
       const score = isReversed ? -scoreData.score : scoreData.score
       const count = scoreData.count
       const displayScore = score / 100
       
       return `${displayScore} (${count}次)`
-    })
-  })
+    }))
+  }))
 
-  return displayData
+  showData.value = displayData
 })
 </script>
 
