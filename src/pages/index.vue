@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { isVotingOpen, topicInfo } = useTopicInfo() // 投票已开始，暂时不需要
+const { isVotingOpen } = useTopicInfo() // 投票已开始，暂时不需要
 
 // 使用模板引用
 const firstPageRef = ref<HTMLElement>()
