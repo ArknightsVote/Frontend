@@ -58,7 +58,7 @@ export function getBestCluster(data_array: any) {
   const SDAM = serie.variance() // the Sum of squared Deviations from the Array Mean
 
   let cluster_list
-  let nclasses = 3 // 聚类簇数
+  let nclasses = 2 // 聚类簇数
   let GVF // The Goodness of Variance Fit 方差拟合优度
   do {
     cluster_list = getClusterList(serie.serie, serie.getClassJenks2(nclasses++))
@@ -69,7 +69,7 @@ export function getBestCluster(data_array: any) {
     data: cluster_list,
     colors: getColors(cluster_list.reverse()),
     GVF,
-    nclasses,
+    nclasses - 1,
   }
 }
 
