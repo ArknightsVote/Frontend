@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { isVotingOpen, topicInfo } = useTopicInfo()
+// const { isVotingOpen, topicInfo } = useTopicInfo() // 投票已开始，暂时不需要
 
 // 使用模板引用
 const firstPageRef = ref<HTMLElement>()
@@ -71,21 +71,19 @@ function handleClick() {
         <!-- 投票区域 - 根据投票开放状态显示不同内容 -->
         <div class="mb-8">
           <!-- 投票已开放时显示投票组件 -->
-          <OperatorVote v-if="isVotingOpen" />
+          <OperatorVote />
           
-          <!-- 投票未开放时显示提示信息 -->
+          <!-- 投票未开放时显示提示信息 - 已注释，投票已开始 -->
+          <!--
           <div v-else class="text-center py-12 px-6">
             <div class="max-w-4xl mx-auto relative">
-              <!-- 主要提示信息 -->
               <div class="mb-8">
                 <h2 class="text-2xl font-bold text-gray-700 mb-4">
                   {{ topicInfo?.title || '投票活动' }} 投票尚未开放
                 </h2>
               </div>
               
-              <!-- 个性化文字布局 -->
               <div class="relative py-8">
-                <!-- 顶部个性化文字 -->
                 <div class="text-center mb-12 relative">
                   <div class="text-lg sm:text-xl font-bold text-indigo-600 mb-4 animate-pulse">
                     "别急，让我先急"
@@ -95,41 +93,32 @@ function handleClick() {
                   </div>
                 </div>
                 
-                <!-- 左右两边的对话框 -->
                 <div class="flex justify-between items-center max-w-3xl mx-auto">
-                  <!-- 左侧对话框 -->
                   <div class="relative">
                     <div class="bg-blue-100/80 text-blue-700 px-4 py-3 rounded-2xl rounded-bl-none shadow-lg border border-blue-200 max-w-xs">
                       <div class="text-sm font-medium">
                         "我寻思这边能行"
                       </div>
-                      <!-- 对话框尾巴 -->
                       <div class="absolute -bottom-2 left-4 w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-blue-100"></div>
                     </div>
-                    <!-- 小人物图标 -->
                     <div class="text-2xl mt-2 text-blue-600">🤔</div>
                   </div>
                   
-                  <!-- 中间分隔符 -->
                   <div class="text-3xl text-gray-400 animate-bounce">
                     ⚔️
                   </div>
                   
-                  <!-- 右侧对话框 -->
                   <div class="relative">
                     <div class="bg-green-100/80 text-green-700 px-4 py-3 rounded-2xl rounded-br-none shadow-lg border border-green-200 max-w-xs">
                       <div class="text-sm font-medium">
                         "显然是这边厉害"
                       </div>
-                      <!-- 对话框尾巴 -->
                       <div class="absolute -bottom-2 right-4 w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-green-100"></div>
                     </div>
-                    <!-- 小人物图标 -->
                     <div class="text-2xl mt-2 text-green-600">😏</div>
                   </div>
                 </div>
                 
-                <!-- 底部装饰 -->
                 <div class="mt-8 text-center">
                   <div class="text-sm text-gray-500 italic">
                     敬请期待激烈的对决！
@@ -138,6 +127,7 @@ function handleClick() {
               </div>
             </div>
           </div>
+          -->
         </div>
       </div>
     </div>
