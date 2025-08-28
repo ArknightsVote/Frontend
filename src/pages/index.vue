@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// const { isVotingOpen, topicInfo } = useTopicInfo() // 投票已开始，暂时不需要
+const { isVotingOpen, topicInfo } = useTopicInfo() // 投票已开始，暂时不需要
 
 // 使用模板引用
 const firstPageRef = ref<HTMLElement>()
@@ -71,8 +71,8 @@ function handleClick() {
         <!-- 投票区域 - 根据投票开放状态显示不同内容 -->
         <div class="mb-8">
           <!-- 投票已开放时显示投票组件 -->
-          <OperatorVote />
-          
+          <OperatorVote v-if="isVotingOpen" />
+
           <!-- 投票未开放时显示提示信息 - 已注释，投票已开始 -->
           <!--
           <div v-else class="text-center py-12 px-6">
