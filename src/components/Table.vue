@@ -341,20 +341,33 @@ function exportTableAsImage() {
   }
   ctx.restore()
 
-  // 导出图片
+  // 导出图片 - 使用WebP格式以获得更好的压缩率
+  // 检查浏览器是否支持WebP格式
+  const supportsWebP = (() => {
+    try {
+      return document.createElement('canvas').toDataURL('image/webp').indexOf('data:image/webp') === 0
+    } catch {
+      return false
+    }
+  })()
+
+  const format = supportsWebP ? 'image/webp' : 'image/png'
+  const extension = supportsWebP ? 'webp' : 'png'
+  const quality = 0.9 // WebP质量设置（0.0-1.0），0.9可以在保持高质量的同时显著减小文件大小
+
   canvas.toBlob((blob) => {
     if (!blob) return
     
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
-    const filename = typeof props.exportTable === 'string' ? `${props.exportTable}.png` : 'table.png'
+    const filename = typeof props.exportTable === 'string' ? `${props.exportTable}.${extension}` : `table.${extension}`
     link.download = filename
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
     URL.revokeObjectURL(url)
-  }, 'image/png')
+  }, format, quality)
 }
 </script>
 

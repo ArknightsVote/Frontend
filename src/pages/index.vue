@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { isVotingOpen } = useTopicInfo() // 投票已开始，暂时不需要
+const { isVotingOpen, isVotingActive, topicInfo } = useTopicInfo()
 
 // 使用模板引用
 const firstPageRef = ref<HTMLElement>()
@@ -70,11 +70,69 @@ function handleClick() {
 
         <!-- 投票区域 - 根据投票开放状态显示不同内容 -->
         <div class="mb-8">
-          <!-- 投票已开放时显示投票组件 -->
-          <OperatorVote v-if="isVotingOpen" />
+          <!-- 投票进行中时显示投票组件 -->
+          <OperatorVote v-if="isVotingActive" />
 
-          <!-- 投票未开放时显示提示信息 - 已注释，投票已开始 -->
-          <!--
+          <!-- 投票已结束时显示结果提示 -->
+          <div v-else-if="isVotingOpen && !isVotingActive" class="text-center py-12 px-6">
+            <div class="max-w-4xl mx-auto relative">
+              <div class="mb-8">
+                <h2 class="text-3xl font-bold text-gray-700 mb-4">
+                  {{ topicInfo?.title || '投票活动' }} 已结束
+                </h2>
+              </div>
+              
+              <div class="relative py-8">
+                <div class="text-center mb-12 relative">
+                  <div class="text-xl sm:text-2xl font-bold text-purple-600 mb-6 animate-pulse">
+                    "决战已落幕，英雄各归位"
+                  </div>
+                  <div class="text-2xl sm:text-3xl font-bold text-green-600 bg-green-50/80 px-6 py-4 rounded-lg inline-block border-2 border-green-200 shadow-lg">
+                    🎊 投票已结束，结果正在统计中 🎊
+                  </div>
+                </div>
+                
+                <div class="flex justify-between items-center max-w-3xl mx-auto">
+                  <div class="relative">
+                    <div class="bg-yellow-100/80 text-yellow-700 px-4 py-3 rounded-2xl rounded-bl-none shadow-lg border border-yellow-200 max-w-xs">
+                      <div class="text-sm font-medium">
+                        "维神就是神！"
+                      </div>
+                      <div class="absolute -bottom-2 left-4 w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-yellow-100"></div>
+                    </div>
+                    <div class="text-2xl mt-2 text-yellow-600">😤</div>
+                  </div>
+                  
+                  <div class="text-4xl text-purple-500 animate-bounce">
+                    👑
+                  </div>
+                  
+                  <div class="relative">
+                    <div class="bg-indigo-100/80 text-indigo-700 px-4 py-3 rounded-2xl rounded-br-none shadow-lg border border-indigo-200 max-w-xs">
+                      <div class="text-sm font-medium">
+                        "小刻也不会输！"
+                      </div>
+                      <div class="absolute -bottom-2 right-4 w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-indigo-100"></div>
+                    </div>
+                    <div class="text-2xl mt-2 text-indigo-600">🎯</div>
+                  </div>
+                </div>
+                
+                <div class="mt-12 text-center">
+                  <div class="bg-white/60 rounded-lg p-6 shadow-lg border border-gray-200">
+                    <div class="text-lg font-semibold text-gray-700 mb-2">
+                      感谢您的参与！
+                    </div>
+                    <div class="text-sm text-gray-600">
+                      请前往 <AppLink to="/tables" class="text-blue-600 hover:text-blue-800 font-medium">排行榜页面</AppLink> 查看最终结果
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 投票未开放时显示提示信息 -->
           <div v-else class="text-center py-12 px-6">
             <div class="max-w-4xl mx-auto relative">
               <div class="mb-8">
@@ -127,7 +185,7 @@ function handleClick() {
               </div>
             </div>
           </div>
-          -->
+         
         </div>
       </div>
     </div>
