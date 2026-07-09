@@ -5,97 +5,133 @@ import type {
   GetOperators1v1MatrixResponse,
   GetTopicInfoRequest,
   GetTopicInfoResponse,
+  GetTopicListAllResponse,
   NewCompareRequest,
   NewCompareResponse,
+  OperatorTimelineRequest,
+  OperatorTimelineResponse,
   SaveScoreRequest,
   SaveScoreResponse,
   ViewFinalOrderRequest,
   ViewFinalOrderResponse,
 } from '@/types/api'
-import { TOPIC_ID, TOPIC_TYPE } from '@/constants/topic'
+
+/**
+ * 获取全部主题（含往期/未开始），供选择器/切换器动态展示
+ */
+export function getAllTopics() {
+  return useApi('/topic/list_all')
+    .post({})
+    .json<GetTopicListAllResponse>()
+}
 
 /**
  * 获取新的比较对局
+ * @param topicId - 当前投票主题 id
  */
-export function newCompare() {
+export function newCompare(topicId: MaybeRefOrGetter<string>) {
   const requestData = computed(() => ({
-    topic_id: TOPIC_ID,
+    topic_id: toValue(topicId),
   } satisfies NewCompareRequest))
 
-  return useApi<NewCompareResponse>('/ballot/new', { immediate: false })
+  return useApi('/ballot/new', { immediate: false })
     .post(requestData)
-    .json()
+    .json<NewCompareResponse>()
 }
 
 /**
  * 保存投票结果
- * @param data - 包含投票结果的参数
+ * @param data - 包含投票结果与主题信息的参数
  */
-export function saveScore(data: MaybeRefOrGetter<{ ballot_id: string, winner: number, loser: number }>) {
+export function saveScore(
+  data: MaybeRefOrGetter<{
+    ballot_id: string
+    winner: number
+    loser: number
+    topic_id: string
+    topic_type: string
+  }>,
+) {
   const requestData = computed(() => {
     const inputData = toValue(data)
     return {
       ballot_id: inputData.ballot_id,
       loser: inputData.loser,
-      topic_id: TOPIC_ID,
+      topic_id: inputData.topic_id,
       winner: inputData.winner,
-      topic_type: TOPIC_TYPE,
+      topic_type: inputData.topic_type,
     } satisfies SaveScoreRequest
   })
 
-  return useApi<SaveScoreResponse>('/ballot/save')
+  return useApi('/ballot/save')
     .post(requestData)
-    .json()
+    .json<SaveScoreResponse>()
 }
 
 /**
  * 获取最终投票结果排序
+ * @param topicId - 当前投票主题 id
  */
-export function viewFinalOrder() {
+export function viewFinalOrder(topicId: MaybeRefOrGetter<string>) {
   const requestData = computed(() => ({
-    topic_id: TOPIC_ID,
+    topic_id: toValue(topicId),
   } satisfies ViewFinalOrderRequest))
 
-  return useApi<ViewFinalOrderResponse>('/results/final_order')
+  return useApi('/results/final_order')
     .post(requestData)
-    .json()
+    .json<ViewFinalOrderResponse>()
 }
 
 /**
  * 获取候选人池数据
+ * @param topicId - 当前投票主题 id
  */
-export function getCandidatePool() {
+export function getCandidatePool(topicId: MaybeRefOrGetter<string>) {
   const requestData = computed(() => ({
-    topic_id: TOPIC_ID,
+    topic_id: toValue(topicId),
   } satisfies GetCandidatePoolRequest))
 
-  return useApi<GetCandidatePoolResponse>('/topic/candidate_pool')
+  return useApi('/topic/candidate_pool')
     .post(requestData)
-    .json()
+    .json<GetCandidatePoolResponse>()
 }
 
 /**
  * 获取 1v1 对战矩阵
+ * @param topicId - 当前投票主题 id
  */
-export function getOperators1v1Matrix() {
+export function getOperators1v1Matrix(topicId: MaybeRefOrGetter<string>) {
   const requestData = computed(() => ({
-    topic_id: TOPIC_ID,
+    topic_id: toValue(topicId),
   } satisfies GetOperators1v1MatrixRequest))
 
-  return useApi<GetOperators1v1MatrixResponse>('/results/1v1_matrix')
+  return useApi('/results/1v1_matrix')
     .post(requestData)
-    .json()
+    .json<GetOperators1v1MatrixResponse>()
 }
 
 /**
  * 获取主题信息
+ * @param topicId - 目标主题 id
  */
-export function getTopicInfo() {
+export function getTopicInfo(topicId: MaybeRefOrGetter<string>) {
   const requestData = computed(() => ({
-    topic_id: TOPIC_ID,
+    topic_id: toValue(topicId),
   } satisfies GetTopicInfoRequest))
 
-  return useApi<GetTopicInfoResponse>('/topic/info')
+  return useApi('/topic/info')
     .post(requestData)
-    .json()
+    .json<GetTopicInfoResponse>()
+}
+
+/**
+ * 获取干员胜率时序（趋势），按需 execute
+ * @param query - 主题 / 时间范围 / 干员 / 粒度
+ */
+export function getOperatorTimeline(query: MaybeRefOrGetter<OperatorTimelineRequest>) {
+  const requestData = computed(() => toValue(query))
+
+  return useApi('/results/operator_timeline', { immediate: false })
+    .post(requestData)
+    .json<OperatorTimelineResponse>()
 }

@@ -5,7 +5,10 @@ const labels = [
   { text: '得分', key: 'score' },
 ]
 
-const { data } = useLocalVote()
+const { currentTopicId } = useCurrentTopic()
+const { topicInfo } = useTopicInfo(currentTopicId)
+
+const { data } = useLocalVote(currentTopicId)
 
 const showData = shallowRef<Record<string, any[]> | null>(null)
 
@@ -36,7 +39,7 @@ onActivated(() => {
   showData.value = getSortedData(data.value)
 })
 
-const title = '明日方舟六星强度个人数据'
+const title = computed(() => `${topicInfo.value?.name ?? '明日方舟六星强度'}个人数据`)
 </script>
 
 <template>
@@ -63,7 +66,7 @@ const title = '明日方舟六星强度个人数据'
         <p pb-2 text-lg>
           还没有数据~
         </p>
-        <router-link class="btn" to="/">
+        <router-link class="btn" :to="{ path: '/', query: { topic: currentTopicId } }">
           去投票
         </router-link>
       </div>

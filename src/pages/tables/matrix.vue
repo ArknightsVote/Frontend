@@ -2,12 +2,17 @@
 import { getOperators1v1Matrix } from '@/api'
 import { getOperator } from '@/shared/operator'
 
+const { currentTopicId } = useCurrentTopic()
+const { topicInfo } = useTopicInfo(currentTopicId)
+
 interface ListItem {
   name: OperatorName
   index: number
 }
 const selectedList = ref<ListItem[]>([])
-const { data } = getOperators1v1Matrix()
+const { data } = getOperators1v1Matrix(currentTopicId)
+
+const tableTitle = computed(() => `${topicInfo.value?.name ?? '明日方舟六星强度'} 1v1 矩阵`)
 
 const labels = computed(() => {
   return [
@@ -103,7 +108,7 @@ const showData = computed(() => {
         :data="showData"
         :fix-index="true"
         idkey="names"
-        title="1v1 矩阵"
+        :title="tableTitle"
       />
     </div>
   </div>

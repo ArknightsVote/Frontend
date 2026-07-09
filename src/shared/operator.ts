@@ -68,39 +68,69 @@ function processStaticData() {
   }
 }
 
-/**
- * 使用候选人池数据的 composable
- */
-export function useOperatorPool() {
-  // 初始化数据加载
-  const { data } = getCandidatePool()
+// 当前已装载到单例中的主题 id
+let loadedPoolTopicId: string | null = null
+// 最新被请求的主题 id（用于在并发切换时丢弃过期结果）
+let requestedTopicId: string | null = null
+// 每个主题在途的加载 promise，避免重复请求
+const poolPromises = new Map<string, Promise<void>>()
 
-  watch(
-    () => data.value,
-    () => {
-      try {
-        if (data.value.data.pool && data.value.data.pool.length > 0) {
-          // 使用API数据
-          const { operators, idToName } = processPoolData(data.value.data.pool)
-          operatorPoolData.value = operators
-          idToNameCache.value = idToName
-        }
-        else {
-          console.warn('⚠️ API返回数据格式异常:', data)
-          throw new Error('API返回的候选人池数据为空')
-        }
+function applyPool(topicId: string, operators: Map<string, Operator>, idToName: Map<string, string>) {
+  operatorPoolData.value = operators
+  idToNameCache.value = idToName
+  loadedPoolTopicId = topicId
+}
+
+/**
+ * 确保指定主题的候选人池已加载到全局单例。
+ * - 同主题已加载则立即返回
+ * - 并发切换主题时只应用最后一次请求的结果
+ * - 请求失败降级到静态数据
+ */
+export function ensureOperatorPool(topicId: string): Promise<void> {
+  if (!topicId)
+    return Promise.resolve()
+
+  requestedTopicId = topicId
+
+  if (loadedPoolTopicId === topicId && operatorPoolData.value)
+    return Promise.resolve()
+
+  const existing = poolPromises.get(topicId)
+  if (existing)
+    return existing
+
+  const p = (async () => {
+    try {
+      const req = getCandidatePool(topicId)
+      await req
+      // 期间主题又被切走，丢弃此结果
+      if (requestedTopicId !== topicId)
+        return
+
+      const pool = req.data.value?.data?.pool
+      if (pool && pool.length > 0) {
+        const { operators, idToName } = processPoolData(pool)
+        applyPool(topicId, operators, idToName)
       }
-      catch (error) {
-        // 降级到静态数据
-        console.warn('⚠️ API加载失败，使用静态数据作为备用方案:', error)
+      else {
+        throw new Error('API返回的候选人池数据为空')
+      }
+    }
+    catch (error) {
+      console.warn('⚠️ 候选人池加载失败，使用静态数据作为备用方案:', error)
+      if (requestedTopicId === topicId) {
         const { operators, idToName } = processStaticData()
-        operatorPoolData.value = operators
-        idToNameCache.value = idToName
-        // 使用静态数据作为备用方案
+        applyPool(topicId, operators, idToName)
       }
-    },
-    { deep: true },
-  )
+    }
+    finally {
+      poolPromises.delete(topicId)
+    }
+  })()
+
+  poolPromises.set(topicId, p)
+  return p
 }
 
 /**

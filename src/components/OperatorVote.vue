@@ -1,11 +1,15 @@
 <script setup lang='ts'>
 import { newCompare as apiNewCompare, saveScore as apiSaveScore } from '@/api'
 
+const { currentTopicId } = useCurrentTopic()
+
 const { current: currentVote, voteFor, pushVote, popVote } = useVoteQueue<Operator>()
 
 // resource
 // -----------------------------------------------------------
 const ballotId = useStorage(STORAGE_KEYS.BALLOT_ID, '')
+// 当前主题类型，取自 /ballot/new 响应，保存投票时透传
+const topicType = ref('')
 
 const {
   data,
@@ -13,7 +17,7 @@ const {
   onFetchResponse,
   onFetchError,
   execute: loadVote,
-} = apiNewCompare()
+} = apiNewCompare(currentTopicId)
 
 /**
  * 切换对比的干员
@@ -42,8 +46,9 @@ onFetchResponse(() => {
     )
   }
 
-  // 更新 ballot_id
+  // 更新 ballot_id 与主题类型
   ballotId.value = responseData.ballot_id
+  topicType.value = responseData.topic_type
 })
 
 const errorTimes = ref(0)
@@ -56,14 +61,16 @@ onFetchError(() => {
   loadVote()
 })
 
-onMounted(() => {
+onMounted(async () => {
+  // 先确保当前主题的候选人池就绪，再拉取对局，避免解析不到干员
+  await ensureOperatorPool(currentTopicId.value)
   loadVote()
 })
 
 // vote local
 // -----------------------------------------------------------
 
-const { assignWinner, assignLoser } = useLocalVote()
+const { assignWinner, assignLoser } = useLocalVote(currentTopicId)
 
 const voteTimes = useStorage(STORAGE_KEYS.VOTE_TIMES, 0)
 function updateLocalVote(winnerName: OperatorName, loserName: OperatorName) {
@@ -81,6 +88,8 @@ async function upLoadVote(winnerId: number, loserId: number) {
     ballot_id: ballotId.value,
     winner: winnerId,
     loser: loserId,
+    topic_id: currentTopicId.value,
+    topic_type: topicType.value,
   })
 }
 

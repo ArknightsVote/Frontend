@@ -1,10 +1,12 @@
 import { getTopicInfo } from '@/api'
+import { isTopicVotingActive } from '@/utils/topicStatus'
 
 /**
  * 主题信息管理 composable
+ * @param topicId - 目标主题 id
  */
-export function useTopicInfo() {
-  const { data } = getTopicInfo()
+export function useTopicInfo(topicId: MaybeRefOrGetter<string>) {
+  const { data } = getTopicInfo(topicId)
 
   const topicInfo = computed(() => data.value?.data)
 
@@ -35,16 +37,7 @@ export function useTopicInfo() {
   })
 
   // 判断投票是否进行中
-  const isVotingActive = computed(() => {
-    if (!topicInfo.value)
-      return false
-
-    const now = new Date()
-    const openTime = new Date(topicInfo.value.open_time)
-    const closeTime = new Date(topicInfo.value.close_time)
-
-    return now >= openTime && now <= closeTime
-  })
+  const isVotingActive = computed(() => isTopicVotingActive(topicInfo.value))
 
   return {
     topicInfo,

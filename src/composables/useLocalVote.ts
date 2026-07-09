@@ -8,8 +8,16 @@ interface LocalVoteItem {
 
 type LocalVoteData = Record<Operator['name'], LocalVoteItem>
 
-export function useLocalVote() {
-  const data = useStorage(STORAGE_KEYS.VOTE_RESULT, {} as LocalVoteData)
+/**
+ * 本地投票统计（按 topic 分桶）
+ * @param topicId - 当前投票主题 id；storage key = local_vote_result:<topic_id>
+ *
+ * 注意：主题切换时页面会按 route.fullPath 重挂载，本 composable 会以新的
+ * topicId 重新初始化，因此这里在挂载时解析一次 key 即可。
+ */
+export function useLocalVote(topicId: MaybeRefOrGetter<string>) {
+  const key = `${STORAGE_KEYS.VOTE_RESULT}:${toValue(topicId)}`
+  const data = useStorage(key, {} as LocalVoteData)
 
   /**
    * 创建数据项，确保类型一致

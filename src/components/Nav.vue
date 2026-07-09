@@ -1,22 +1,19 @@
 <script setup lang="ts">
-const route = useRoute()
+const { currentTopicId } = useCurrentTopic()
 
-const isHome = computed(() => route.path === '/')
-
-const nav = [
-  { text: '去投票', to: '/' },
-  { text: '总数据', to: '/tables' },
-  { text: '个人数据', to: '/tables/individual' },
-  { text: '1v1 矩阵', to: '/tables/matrix' },
-]
+// 导航链接携带当前 topic，保证跨页切换保持主题
+const nav = computed(() => {
+  const query = currentTopicId.value ? { topic: currentTopicId.value } : {}
+  return [
+    { text: '去投票', to: { path: '/', query } },
+    { text: '总数据', to: { path: '/tables', query } },
+    { text: '个人数据', to: { path: '/tables/individual', query } },
+    { text: '1v1 矩阵', to: { path: '/tables/matrix', query } },
+    { text: '趋势', to: { path: '/tables/timeline', query } },
+  ]
+})
 </script>
 
 <template>
-  <NavHome
-    v-if="isHome"
-    :items="nav"
-    flex="~ gap-2 items-center"
-  />
-
-  <NavPage v-else :items="nav" />
+  <NavPage :items="nav" />
 </template>

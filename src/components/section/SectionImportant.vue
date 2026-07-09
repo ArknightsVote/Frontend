@@ -1,7 +1,24 @@
 <script setup lang="ts">
 import { useTopicInfo } from '@/composables/useTopicInfo'
+import { topicStatusText } from '@/utils/topicStatus'
 
-const { topicInfo, votingPeriod, isVotingActive } = useTopicInfo()
+const { currentTopicId } = useCurrentTopic()
+const { topicInfo, votingPeriod } = useTopicInfo(currentTopicId)
+
+const status = computed(() => topicStatusText(topicInfo.value))
+
+const banner = computed(() => {
+  switch (status.value) {
+    case '进行中':
+      return { cls: 'bg-green-500/90 text-white', text: '投票进行中，快来参与吧！' }
+    case '未开始':
+      return { cls: 'bg-blue-500/90 text-white', text: '投票尚未开始，敬请期待！' }
+    case '已结束':
+      return { cls: 'bg-yellow-500/90 text-white', text: '本次投票已结束，最终结果稍后公布。' }
+    default:
+      return { cls: 'bg-gray-500/90 text-white', text: '' }
+  }
+})
 </script>
 
 <template>
@@ -13,16 +30,13 @@ const { topicInfo, votingPeriod, isVotingActive } = useTopicInfo()
         </p>
       </div>
 
-      <div 
-        :class="[
-          'px-4 py-3 rounded-lg shadow-md',
-          isVotingActive 
-            ? 'bg-green-500/90 text-white' 
-            : 'bg-yellow-500/90 text-white'
-        ]"
+      <div
+        v-if="banner.text"
+        class="px-4 py-3 rounded-lg shadow-md"
+        :class="banner.cls"
       >
         <p class="font-bold">
-          {{ isVotingActive ? '投票进行中，快来参与吧！' : '本次投票已结束，最终结果稍后公布。' }}
+          {{ banner.text }}
         </p>
       </div>
     </div>

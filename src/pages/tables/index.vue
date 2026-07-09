@@ -2,7 +2,10 @@
 import type { ViewFinalOrderItem } from '@/types/api'
 import { viewFinalOrder } from '@/api'
 
-const { data: rawData } = viewFinalOrder()
+const { currentTopicId } = useCurrentTopic()
+const { topicInfo } = useTopicInfo(currentTopicId)
+
+const { data: rawData } = viewFinalOrder(currentTopicId)
 
 // 将接口数据转换为期望格式
 const data = computed(() => {
@@ -37,7 +40,7 @@ const labels = [
   { text: '得分', key: 'score' },
 ]
 
-const title = '明日方舟六星强度总数据'
+const title = computed(() => `${topicInfo.value?.name ?? '明日方舟六星强度'}总数据`)
 </script>
 
 <template>

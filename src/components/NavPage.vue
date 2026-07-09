@@ -1,9 +1,15 @@
 <script setup lang="ts">
+import type { RouteLocationRaw } from 'vue-router'
+
 defineProps<{
-  items: Record<'text' | 'to', string>[]
+  items: { text: string, to: RouteLocationRaw }[]
 }>()
 
 const route = useRoute()
+
+function toPath(to: RouteLocationRaw): string {
+  return typeof to === 'string' ? to : ((to as any).path ?? '')
+}
 </script>
 
 <template>
@@ -12,6 +18,7 @@ const route = useRoute()
     h-14
     sticky
     top-0
+    z-30
     b="b-1 b-gray-200"
     backdrop-blur
     flex
@@ -23,25 +30,30 @@ const route = useRoute()
         <SiteTitle class="hidden md:block" />
       </router-link>
 
-      <div
-        flex
-        divide-x
-        font-bold
-        text-slate-800
-      >
-        <slot name="before" />
-        <div flex gap-4 md="flex-row gap-6">
-          <router-link
-            v-for="n in items"
-            :key="n.to"
-            :to="n.to"
-            hover="text-indigo-600"
-            :class="{ 'text-indigo-500': route.path === n.to }"
-          >
-            {{ n.text }}
-          </router-link>
+      <div flex items-center gap-3 md="gap-4">
+        <TopicSwitcher />
+
+        <div
+          flex
+          divide-x
+          font-bold
+          text-slate-800
+          items-center
+        >
+          <slot name="before" />
+          <div flex gap-4 md="flex-row gap-6" px-3>
+            <router-link
+              v-for="n in items"
+              :key="n.text"
+              :to="n.to"
+              hover="text-indigo-600"
+              :class="{ 'text-indigo-500': route.path === toPath(n.to) }"
+            >
+              {{ n.text }}
+            </router-link>
+          </div>
+          <slot name="after" />
         </div>
-        <slot name="after" />
       </div>
     </div>
   </div>

@@ -94,6 +94,19 @@ export interface GetOperators1v1MatrixResponse {
   status: number
 }
 
+// 主题信息数据结构（/topic/info 与 /topic/list_all 共用）
+export interface TopicInfoData {
+  id: string
+  name: string
+  title: string
+  description: string
+  topic_type: string
+  open_time: string
+  close_time: string
+  /** 当前是否可投票（后端 is_active && open<=now<=close） */
+  is_active: boolean
+}
+
 // GetTopicInfo 接口类型定义
 export interface GetTopicInfoRequest {
   topic_id: string
@@ -101,14 +114,50 @@ export interface GetTopicInfoRequest {
 
 export interface GetTopicInfoResponse {
   status: number
+  data: TopicInfoData
+  message: string
+}
+
+// GetTopicListAll 接口类型定义（获取全部主题，含往期/未开始）
+export interface GetTopicListAllResponse {
+  status: number
   data: {
-    id: string
-    name: string
-    title: string
-    description: string
-    topic_type: string
-    open_time: string
-    close_time: string
+    topics: TopicInfoData[]
+  }
+  message: string
+}
+
+// operator_timeline 接口类型定义（干员胜率时序）
+export type TimeGranularity = 'second' | 'minute' | 'hour' | 'day'
+
+export interface OperatorTimelineRequest {
+  topic_id: string
+  start_time: string // ISO
+  end_time: string // ISO
+  operator_ids: number[]
+  limit?: number
+  granularity?: TimeGranularity
+}
+
+export interface TimelinePoint {
+  timestamp: string
+  data: { operator_id: number, rate: number }[]
+}
+
+export interface OperatorTimelineResponse {
+  status: number
+  data: {
+    timeline: TimelinePoint[]
+    operators: { operator_id: number, name: string }[]
+    summary: {
+      total_points: number
+      time_range: { start: string, end: string }
+      operator_count: number
+    }
+    /** 后端按粒度下发的建议刷新间隔（毫秒） */
+    refresh_ms: number
+    /** 后端下发的单次最多干员数（后端也会强制截断） */
+    max_operators: number
   }
   message: string
 }
