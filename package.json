@@ -33,7 +33,7 @@
     "eslint": "^10.6.0",
     "mockjs": "^1.1.0",
     "rimraf": "^6.1.3",
-    "typescript": "~7.0.2",
+    "typescript": "~6.0.3",
     "unocss": "^66.7.5",
     "unplugin-auto-import": "^21.0.0",
     "unplugin-vue-components": "^32.1.0",
