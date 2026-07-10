@@ -93,6 +93,39 @@ const PALETTE = ['#2a78d6', '#1baf7a', '#eda100', '#008300', '#4a3aa7', '#e34948
 const chartEl = ref<HTMLElement>()
 const chart = shallowRef<ReturnType<typeof import('echarts').init> | null>(null)
 
+// 估算底部图例的实际换行行数：用 canvas 量文字宽度模拟 echarts plain 图例的排布，
+// 比“干员数 / 每行固定值”准确，避免底部预留过多、图例与图表本体间空隙过大。
+let legendMeasureCtx: CanvasRenderingContext2D | null = null
+function countLegendRows(names: string[], width: number): number {
+  if (!names.length)
+    return 1
+  legendMeasureCtx ??= document.createElement('canvas').getContext('2d')
+  if (!legendMeasureCtx)
+    return Math.max(1, Math.ceil(names.length / 7)) // 拿不到 canvas 时退回粗略估算
+  legendMeasureCtx.font = '12px sans-serif'
+  const ICON = 25 // legend.itemWidth 默认值
+  const ICON_TEXT_GAP = 5 // 图标与文字间距（echarts 固定）
+  const ITEM_GAP = 10 // legend.itemGap 默认值
+  const avail = Math.max(1, width - 8 - 12) // 减去 legend.left 与内边距/安全余量
+  let x = 0
+  let rows = 1
+  for (const name of names) {
+    const w = ICON + ICON_TEXT_GAP + legendMeasureCtx.measureText(name).width
+    if (x > 0 && x + w > avail) {
+      rows++
+      x = 0
+    }
+    x += w + ITEM_GAP
+  }
+  return rows
+}
+
+// 底部预留高度：每行约 21px + 一个固定小间距，随实际行数收紧
+function legendGridBottom(names: string[]): number {
+  const width = chart.value?.getWidth() ?? 720
+  return 12 + countLegendRows(names, width) * 21
+}
+
 function buildOption(resp: OperatorTimelineResponse['data']): EChartsOption {
   const series = resp.operators.map(op => ({
     name: op.name,
@@ -107,20 +140,19 @@ function buildOption(resp: OperatorTimelineResponse['data']): EChartsOption {
     }),
   }))
 
-  // 图例分行展示（不翻页）：按干员数估算行数，给顶部留出足够空间
-  const legendRows = Math.max(1, Math.ceil(resp.operators.length / 7))
-  const gridTop = 24 + legendRows * 26
+  // 图例移到底部（不翻页）：按实际换行行数收紧底部预留，避免与图表本体空隙过大
+  const gridBottom = legendGridBottom(resp.operators.map(op => op.name))
 
   return {
     color: PALETTE,
     backgroundColor: 'transparent',
-    grid: { left: 8, right: 20, top: gridTop, bottom: 32, containLabel: true },
+    grid: { left: 8, right: 20, top: 30, bottom: gridBottom, containLabel: true },
     tooltip: {
       trigger: 'axis',
       valueFormatter: (v: any) => (v == null ? '-' : `${v}%`),
     },
-    // 左对齐，避免增删干员时图例整体左右漂移
-    legend: { type: 'plain', top: 8, left: 8, textStyle: { color: '#52514e' } },
+    // 底部左对齐，避免增删干员时图例整体左右漂移
+    legend: { type: 'plain', bottom: 0, left: 8, textStyle: { color: '#52514e' } },
     xAxis: {
       type: 'time',
       // 固定到请求的时间窗，保证时间轴按真实比例展示（不随数据稀疏而压缩）
@@ -161,7 +193,23 @@ onMounted(async () => {
 })
 
 watch(() => data.value, renderChart)
-useResizeObserver(chartEl, () => chart.value?.resize())
+
+// 宽度变化会改变图例换行行数，需同步底部预留（否则空隙随窗口宽度错位）
+let lastLegendBottom = -1
+function syncLegendGrid() {
+  const names = data.value?.data?.operators?.map(op => op.name)
+  if (!chart.value || !names?.length)
+    return
+  const bottom = legendGridBottom(names)
+  if (bottom === lastLegendBottom)
+    return
+  lastLegendBottom = bottom
+  chart.value.setOption({ grid: { bottom } })
+}
+useResizeObserver(chartEl, () => {
+  chart.value?.resize()
+  syncLegendGrid()
+})
 
 onUnmounted(() => {
   chart.value?.dispose()
