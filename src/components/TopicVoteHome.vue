@@ -132,14 +132,20 @@ function handleClick() {
           <SectionWarning />
         </div>
 
-        <!-- 其他信息 -->
-        <div class="grid gap-6 lg:grid-cols-2">
-          <div>
-            <SectionAdditional />
-          </div>
-          <div>
-            <SectionHistory />
-          </div>
+        <!-- 投票说明 -->
+        <div class="mb-8">
+          <SectionVoteExplain />
+        </div>
+
+        <!-- 相关链接 + 历届结果 -->
+        <div class="grid gap-6 lg:grid-cols-2 items-stretch">
+          <SectionRelatedLinks />
+          <SectionHistory />
+        </div>
+
+        <!-- 友情链接 · 终末地 Wiki -->
+        <div class="mt-8">
+          <SectionEndfield />
         </div>
 
         <!-- 感谢信息 -->
