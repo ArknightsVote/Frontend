@@ -40,12 +40,18 @@ const maxOperators = computed(() => data.value?.data?.max_operators ?? DEFAULT_M
 const operatorOverflow = computed(() => operatorIds.value.length > maxOperators.value)
 const canQuery = computed(() => operatorIds.value.length > 0 && !operatorOverflow.value)
 
+// 把时间戳向下对齐到量化桁：不再发原始 now，同一桁期内请求相同 → 命中后端缓存
+function floorToMs(d: Date, q: number): Date {
+  return new Date(Math.floor(d.getTime() / q) * q)
+}
 const request = computed<OperatorTimelineRequest>(() => {
   const { start, end } = resolveRange(timeRange.value)
+  // 与后端量化步长一致：秒视图 10s，分钟/小时/天视图 60s
+  const q = granularity.value === 'second' ? 10_000 : 60_000
   return {
     topic_id: currentTopicId.value,
-    start_time: start.toISOString(),
-    end_time: end.toISOString(),
+    start_time: floorToMs(start, q).toISOString(),
+    end_time: floorToMs(end, q).toISOString(),
     operator_ids: operatorIds.value,
     granularity: granularity.value,
     limit: 2000,
