@@ -52,41 +52,33 @@ const request = computed<OperatorTimelineRequest>(() => {
   }
 })
 
-const { data, isFetching, execute } = getOperatorTimeline(request)
+const { data, isFetching, execute, error, aborted } = getOperatorTimeline(request)
 const hasData = computed(() => (data.value?.data?.timeline?.length ?? 0) > 0)
 
-watchDebounced(
-  [operatorIds, timeRange],
-  () => {
-    if (canQuery.value)
-      execute()
-  },
-  { debounce: 300 },
-)
+// 15s 内最多请求一次（leading 立即、trailing 收尾），硬性限流减轻后端压力
+const throttledFetch = useThrottleFn(() => {
+  if (canQuery.value)
+    execute()
+}, 15000)
 
-// 类实时刷新：刷新间隔由后端按粒度下发（随每次响应携带），前端仅兜底
-const DEFAULT_REFRESH_MS = 15_000
-const refreshInterval = computed(() => data.value?.data?.refresh_ms ?? DEFAULT_REFRESH_MS)
-const refreshLabel = computed(() => {
-  const s = Math.round(refreshInterval.value / 1000)
-  return s >= 60 ? `每 ${Math.round(s / 60)} 分钟` : `每 ${s} 秒`
+// 选择/范围变化：先 300ms 合并快速改动，再走 15s 节流
+watchDebounced([operatorIds, timeRange], throttledFetch, { debounce: 300 })
+
+// 失败检测：后端错误以 HTTP 200 + { status != 200 } 信封下发（含 429 限流），
+// 传输层错误则走 error；两者都用手动「重试」按钮恢复，不自动重试
+const failed = computed(() =>
+  !isFetching.value
+  && (!!error.value || aborted.value || (data.value?.status != null && data.value.status !== 200)))
+const failMessage = computed(() => {
+  if (error.value || aborted.value)
+    return '请求超时或网络错误，请重试'
+  const s = data.value?.status
+  return s != null && s !== 200 ? (data.value?.message || `请求失败 (${s})`) : ''
 })
-
-const autoRefresh = useStorage('timeline:auto_refresh', false)
-const { pause: pauseRefresh, resume: resumeRefresh } = useIntervalFn(
-  () => {
-    if (canQuery.value)
-      execute()
-  },
-  refreshInterval,
-  { immediate: false },
-)
-watch([autoRefresh, operatorIds], () => {
-  if (autoRefresh.value && canQuery.value)
-    resumeRefresh()
-  else
-    pauseRefresh()
-}, { immediate: true })
+function retry() {
+  if (canQuery.value)
+    execute() // 手动重试绕过 15s 节流
+}
 
 // ECharts（懒加载，仅本页加载）；dataviz 校验过的分类色板（浅色）
 const PALETTE = ['#2a78d6', '#1baf7a', '#eda100', '#008300', '#4a3aa7', '#e34948', '#e87ba4', '#eb6834']
@@ -189,7 +181,7 @@ onMounted(async () => {
   }
   // 恢复的选择：进入即拉一次
   if (canQuery.value)
-    execute()
+    throttledFetch()
 })
 
 watch(() => data.value, renderChart)
@@ -252,12 +244,6 @@ onUnmounted(() => {
           最多选择 {{ maxOperators }} 个干员（当前 {{ operatorIds.length }}）
         </span>
 
-        <label flex items-center gap-1.5 cursor-pointer select-none>
-          <input v-model="autoRefresh" type="checkbox" class="accent-indigo-500">
-          <span text-slate-500>自动刷新</span>
-          <span v-if="autoRefresh" text-xs text-slate-400>{{ refreshLabel }}</span>
-        </label>
-
         <span v-if="isFetching" text-slate-400>载入中…</span>
       </div>
 
@@ -286,6 +272,17 @@ onUnmounted(() => {
           <p text-sm text-slate-500>
             当前已选 {{ operatorIds.length }} 个，请减少后再查看
           </p>
+        </div>
+        <div
+          v-else-if="failed"
+          class="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-white/85 backdrop-blur-sm"
+        >
+          <p text-slate-600>
+            {{ failMessage }}
+          </p>
+          <button class="btn" @click="retry">
+            重试
+          </button>
         </div>
         <div
           v-else-if="!hasData && !isFetching"

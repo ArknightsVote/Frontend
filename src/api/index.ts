@@ -131,7 +131,8 @@ export function getTopicInfo(topicId: MaybeRefOrGetter<string>) {
 export function getOperatorTimeline(query: MaybeRefOrGetter<OperatorTimelineRequest>) {
   const requestData = computed(() => toValue(query))
 
-  return useApi('/results/operator_timeline', { immediate: false })
+  // timeout：避免后端聚合过慢/连接 stalled 时请求永远挂起（超时会 abort → 触发失败态 → 显示重试）
+  return useApi('/results/operator_timeline', { immediate: false, timeout: 15000 })
     .post(requestData)
     .json<OperatorTimelineResponse>()
 }

@@ -19,7 +19,6 @@ const HOUR = 3600e3
 const DAY = 24 * HOUR
 
 export const QUICK_RANGES: RelativeRange[] = [
-  { kind: 'relative', ms: 5 * MIN, label: '最近 5 分钟' },
   { kind: 'relative', ms: 15 * MIN, label: '最近 15 分钟' },
   { kind: 'relative', ms: 30 * MIN, label: '最近 30 分钟' },
   { kind: 'relative', ms: HOUR, label: '最近 1 小时' },
