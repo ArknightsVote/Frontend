@@ -1,4 +1,5 @@
 <script setup lang='ts'>
+import type { CellWithSub } from '@/components/Table.vue'
 import { getOperators1v1Matrix } from '@/api'
 import { getOperator } from '@/shared/operator'
 
@@ -9,7 +10,8 @@ interface ListItem {
   name: OperatorName
   index: number
 }
-const selectedList = ref<ListItem[]>([])
+// 按主题持久化已选干员，切换/刷新不丢（与 timeline 页一致）
+const selectedList = useStorage<ListItem[]>(`matrix:ops:${currentTopicId.value}`, [])
 const { data } = getOperators1v1Matrix(currentTopicId)
 
 const tableTitle = computed(() => `${topicInfo.value?.name ?? '明日方舟六星强度'} 1v1 矩阵`)
@@ -33,7 +35,7 @@ const labels = computed(() => {
 })
 
 const showData = computed(() => {
-  const displayData: Record<string, (number | string)[]> = {
+  const displayData: Record<string, (string | CellWithSub)[]> = {
     names: selectedList.value.map(el => el.name),
   }
 
@@ -45,13 +47,13 @@ const showData = computed(() => {
   const selected = selectedList.value
   
   selected.forEach(({ name }) => {
-    displayData[name] = selected.map(({ name: rowName }) => {
+    displayData[name] = selected.map(({ name: rowName }): CellWithSub => {
       // 根据干员名称获取真实的干员ID
       const rowOperator = getOperator(rowName)
       const colOperator = getOperator(name)
       
       if (!rowOperator || !colOperator) {
-        return 0
+        return { v: 0 }
       }
       
       const rowOperatorId = rowOperator.id
@@ -60,14 +62,28 @@ const showData = computed(() => {
       // 尝试两种可能的键名组合
       const key1 = `${rowOperatorId}:${colOperatorId}`
       const key2 = `${colOperatorId}:${rowOperatorId}`
-      
-      let value = matrixData[key1]
-      if (value === undefined) {
-        // 如果第一种组合不存在，尝试第二种组合并取负值
-        value = matrixData[key2] ? -matrixData[key2] : 0
+
+      // 后端同时写入两个方向（a:b 为 +score，b:a 为 -score），
+      // 且每条记录都带有同一对的 count，故 key2 回退分支基本冗余，保留以防万一
+      const item = matrixData[key1]
+      let score: number
+      let count: number
+      if (item !== undefined) {
+        score = item.score
+        count = item.count
       }
-      
-      return value / 100
+      else {
+        const rev = matrixData[key2]
+        if (rev === undefined) {
+          // 对角线或无数据
+          return { v: 0 }
+        }
+        score = -rev.score
+        count = rev.count
+      }
+
+      // 主值 score/100 显示为主行，对局数 count 以小灰字放到第二行
+      return { v: score / 100, sub: String(count) }
     })
   })
 

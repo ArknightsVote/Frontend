@@ -14,6 +14,12 @@ interface TransformLabel extends Omit<KeyLabel, 'key'> {
 
 type Data = Record<KeyLabel['key'], any[]>
 
+/** 单元格可为 { v, sub }：主值 v 显示为主行，附注 sub 以小灰字放到第二行（如 1v1 矩阵的对局数）。 */
+export interface CellWithSub {
+  v: string | number
+  sub?: string
+}
+
 export interface TableProps {
   labels: (KeyLabel | TransformLabel)[]
   data: Data
@@ -56,6 +62,10 @@ const idColItems = computed(() => {
 
 function isKeyLabel(label: KeyLabel | TransformLabel): label is KeyLabel {
   return Object.hasOwnProperty.call(label, 'key')
+}
+
+function isCellWithSub(val: unknown): val is CellWithSub {
+  return typeof val === 'object' && val !== null && 'v' in val
 }
 
 function getValue(row: number, col: number) {
@@ -119,7 +129,7 @@ function exportData() {
       <slot name="function" />
     </div>
 
-    <div flex-1 my-2 class="bg-white/90 backdrop-blur-sm rounded-lg shadow-md border border-gray-200/60 overflow-hidden table-container">
+    <div flex-1 my-2 class="bg-white/90 backdrop-blur-sm rounded-lg shadow-md border border-gray-200/60 table-container">
       <table
         w-full
         table-auto
@@ -137,6 +147,7 @@ function exportData() {
               break-keep
               whitespace-nowrap
               class="px-4 py-3"
+              :class="fixIndex ? 'first:sticky first:left-0 first:z-2 first:bg-blue-100' : ''"
             >
               {{ label.text }}
             </th>
@@ -159,7 +170,17 @@ function exportData() {
                 class="px-4 py-3 text-gray-700 font-medium"
                 :class="fixIndex ? 'first:sticky first:left-0 z-1 first:bg-blue-100 first:text-blue-800 first:font-semibold' : ''"
               >
-                {{ getValue(row, col) }}
+                <template v-if="isCellWithSub(getValue(row, col))">
+                  <div leading-tight>
+                    {{ getValue(row, col).v }}
+                  </div>
+                  <div text-xs text-gray-400 leading-tight>
+                    {{ getValue(row, col).sub || '\u00A0' }}
+                  </div>
+                </template>
+                <template v-else>
+                  {{ getValue(row, col) }}
+                </template>
               </td>
             </tr>
           </slot>
@@ -172,8 +193,9 @@ function exportData() {
 /* 表格容器 - 需要相对定位 */
 .table-container {
   position: relative;
-  overflow: hidden; /* 防止水印溢出 */
-  width: 100%;     /* 根据实际表格宽度调整 */
+  overflow-x: auto;   /* 宽表横向滚动，避免右侧列被裁切 */
+  overflow-y: hidden; /* 高度随内容，纵向不出现滚动条 */
+  width: 100%;        /* 根据实际表格宽度调整 */
 }
 
 /* 水印样式 - 使用伪元素覆盖 */

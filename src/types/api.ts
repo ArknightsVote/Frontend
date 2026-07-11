@@ -86,9 +86,14 @@ export interface GetOperators1v1MatrixRequest {
   topic_id: string
 }
 
+export interface Operators1v1MatrixItem {
+  score: number
+  count: number
+}
+
 export interface GetOperators1v1MatrixResponse {
   data: {
-    [key: string]: number
+    [key: string]: Operators1v1MatrixItem
   }
   message: string
   status: number
